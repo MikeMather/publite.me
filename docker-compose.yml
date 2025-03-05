@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  app:
+    image: mikemather/publite:latest
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_PATH=/app/data/blog.db
+      - MEDIA_ROOT=/app/data/media
+      - SECRET_KEY=<a secure secret key>

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% from "includes/csrf.html" import csrf_token %}
+
+{% block title %}{% if is_new %}New Post{% else %}Edit Post{% endif %}{% endblock %}
+
+{% block header %}
+<h1>publite.me</h1>
+{% with active='new_post' if is_new else 'posts' %}
+{% include "admin/includes/nav.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block head %}
+{% include "admin/includes/editor.html" %}
+{% endblock %}
+
+{% block body_end %}
+{% include "admin/includes/media_modal.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="post-editor">
+  {% if success %}
+  <div class="success">Saved</div>
+  {% endif %}
+
+  <form method="post" action="{% if is_new %}/admin/posts/new{% else %}/admin/posts/{{ post.id }}/edit{% endif %}">
+    {{ csrf_token(request) }}
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" value="{{ post.title if post else '' }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="slug">URL</label>
+      <input type="text" id="slug" name="slug" value="{{ post.slug if post else '' }}"
+        placeholder="Leave blank to auto-generate">
+    </div>
+
+    <div class="form-group">
+      <label for="tags">Tags (comma separated)</label>
+      <input type="text" id="tags" name="tags" value="{{ post.tags if post else '' }}" placeholder="tag1, tag2, tag3">
+      <small>Separate multiple tags with commas</small>
+    </div>
+
+    <div class="form-group">
+      <label for="markdown_content">Content</label>
+      <textarea id="markdown_content" name="markdown_content">{{ post.markdown_content if post else '' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input type="checkbox" name="is_published" {% if post and post.is_published %}checked{% endif %}>
+        Published
+      </label>
+    </div>
+
+    <details class="seo-section">
+      <summary>SEO Options</summary>
+      <div class="form-group">
+        <label for="meta_description">Meta Description (max 160 characters)</label>
+        <textarea id="meta_description" name="meta_description" maxlength="160" rows="2"
+          placeholder="Brief description for search engines">{{ post.meta_description if post else '' }}</textarea>
+        <small>Recommended length: 50-160 characters. This appears in search results.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="meta_keywords">Meta Keywords (comma separated)</label>
+        <input type="text" id="meta_keywords" name="meta_keywords" value="{{ post.meta_keywords if post else '' }}"
+          placeholder="keyword1, keyword2, keyword3">
+        <small>Less important for SEO now, but still used by some search engines.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="canonical_url">Canonical URL (optional)</label>
+        <input type="text" id="canonical_url" name="canonical_url" value="{{ post.canonical_url if post else '' }}"
+          placeholder="https://example.com/original-content">
+        <small>Use this if content appears on multiple URLs to prevent duplicate content issues.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="og_image">Social Media Image URL</label>
+        <input type="text" id="og_image" name="og_image" value="{{ post.og_image if post else '' }}"
+          placeholder="https://example.com/image.jpg">
+        <small>Image to display when shared on social media (recommended size: 1200x630).</small>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="no_index" {% if post and post.no_index %}checked{% endif %}>
+          Exclude from search engines
+        </label>
+        <small>Check this to prevent this post from appearing in search results.</small>
+      </div>
+    </details>
+
+    <div class="form-actions">
+      <button type="submit" class="button">Save</button>
+      <a href="/admin/dashboard" class="button secondary">Cancel</a>
+      {% if not is_new %}
+      <a href="/blog/{{ post.slug }}" target="_blank" class="button secondary">View</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

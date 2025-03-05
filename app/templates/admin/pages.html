@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Pages{% endblock %}
+
+{% block header %}
+<h1>publite.me</h1>
+{% with active='pages' %}
+{% include "admin/includes/nav.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="pages-container">
+  <div class="header-with-actions">
+    <h2>Pages</h2>
+    <a href="/admin/pages/new" class="button">New Page</a>
+  </div>
+  {% with items=pages, item_type='page', view_prefix='' %}
+  {% include "admin/includes/content_list.html" %}
+  {% endwith %}
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Comment - {{ settings.blog_title }}{% endblock %}
+
+{% block content %}
+<div class="verify-comment-container">
+  <h1>Verify Your Comment</h1>
+
+  {% if error %}
+  <div class="error-message">
+    <p>An error occurred during verification:</p>
+    <p>{{ error }}</p>
+    <a href="/blog" class="button">Return to Blog</a>
+  </div>
+  {% else %}
+  <div class="verification-info">
+    <p>You're about to verify a comment on another blog using your identity from <strong>{{ settings.blog_title
+        }}</strong>.</p>
+
+    <div class="comment-details">
+      <h2>Comment Details</h2>
+      <ul>
+        <li><strong>Blog:</strong> {{ challenge_data.author_blog_url }}</li>
+        <li><strong>Author:</strong> {{ challenge_data.author_name }}</li>
+        <li><strong>Post:</strong> {{ challenge_data.post_slug }}</li>
+      </ul>
+    </div>
+
+    <p>By continuing, you confirm that you are the owner of this blog and authorize this comment.</p>
+
+    <div class="verification-actions">
+      <a href="{{ redirect_url }}" class="button primary">Verify Comment</a>
+      <a href="/blog" class="button secondary">Cancel</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

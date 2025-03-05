@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - {{ settings.blog_title }}{% endblock %}
+
+{% block content %}
+<article class="post-full">
+  <h1>{{ post.title }}</h1>
+  <div class="post-meta">
+    {{ post.created_at.strftime('%B %d, %Y') }}
+    {% if post.updated_at and post.updated_at != post.created_at %}
+    <span class="updated">(Updated: {{ post.updated_at.strftime('%B %d, %Y') }})</span>
+    {% endif %}
+  </div>
+  {% if post.tags %}
+  <div class="post-tags">
+    {% for tag in post.tags.split(',') %}
+    <a href="/blog?tag={{ tag.strip() }}" class="tag">#{{ tag.strip() }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="post-content">
+    {{ post.content | safe }}
+  </div>
+  <div class="post-footer">
+    <a href="/blog" class="button secondary">← Back to all posts</a>
+  </div>
+</article>
+
+{% if settings.comments_enabled %}
+<section class="comments-section">
+  <h2>Comments</h2>
+
+  {% if comments %}
+  <div class="comments-list">
+    {% for comment in comments %}
+    <div class="comment {% if comment.verified %}verified{% else %}unverified{% endif %}" id="comment-{{ comment.id }}">
+      <div class="comment-meta">
+        <span class="comment-author">
+          {% if comment.author_blog_url and comment.verified %}
+          <span class="author-blog">{{ comment.author_name }}#<a href="{{ comment.author_blog_url }}" target="_blank">{{
+              comment.author_blog_url
+              }}</a></span>
+          {% if comment.verified %}
+          <span class="verification-badge" title="Verified blog owner">✓</span>
+          {% else %}
+          <span class="verification-badge unverified" title="Unverified blog owner">?</span>
+          {% endif %}
+          {% else %}
+          <span class="author-name">{{ comment.author_name }}</span>
+          <span class="anonymous-badge">(Anonymous)</span>
+          {% endif %}
+        </span>
+        <span class="comment-date">{{ comment.created_at.strftime('%B %d, %Y') }}</span>
+      </div>
+
+      {% if comment.quoted_comment_content %}
+      <blockquote class="quoted-comment">
+        <div class="quoted-content">{{ comment.quoted_comment_content }}</div>
+        <cite>
+          — {{ comment.quoted_comment_author }}
+          {% if comment.quoted_comment_blog_url %}
+          <span class="quoted-blog">#{{ comment.quoted_comment_blog_url }}</span>
+          {% endif %}
+        </cite>
+      </blockquote>
+      {% endif %}
+
+      <div class="comment-content">
+        {{ comment.content }}
+      </div>
+
+      <div class="comment-actions">
+        <button class="button quote-button" data-comment-id="{{ comment.id }}"
+          data-comment-content="{{ comment.content }}" data-comment-author="{{ comment.author_name }}"
+          data-comment-blog-url="{{ comment.author_blog_url }}">
+          Quote Reply
+        </button>
+        {% if is_admin %}
+        <form action="/blog/{{ post.slug }}/comment/{{ comment.id }}/delete" method="post" class="inline-form"
+          onsubmit="return confirm('Are you sure you want to delete this comment?');">
+          <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+          <button type="submit" class="button tertiary danger">Delete</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="no-comments">No comments yet. Be the first to comment!</p>
+  {% endif %}
+
+  <div class="comment-form-container">
+    <h3>Add a Comment</h3>
+    <form action="/blog/{{ post.slug }}/comment" method="post" class="comment-form">
+      <!-- CSRF Token -->
+      <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+      <div class="form-group">
+        <div class="input-row">
+          <div class="input-col">
+            <label for="author_name">Name</label>
+            <input type="text" id="author_name" name="author_name" required>
+          </div>
+          <div class="input-col">
+            {% if settings.allow_anonymous_comments %}
+            <label for="author_blog_url">publite.me Domain (optional)</label>
+            <input type="text" id="author_blog_url" name="author_blog_url" placeholder="yourblog.com">
+            {% else %}
+            <label for="author_blog_url">publite.me Domain</label>
+            <input type="text" id="author_blog_url" name="author_blog_url" placeholder="yourblog.com" required>
+            <small>Verification is required for commenting.</small>
+            {% endif %}
+          </div>
+        </div>
+        {% if settings.allow_anonymous_comments %}
+        {% else %}
+        <small>Just enter the domain (e.g., yourblog.com).</small>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <textarea id="content" name="content" placeholder="Write your comment here..." required></textarea>
+      </div>
+
+      <!-- Hidden fields for quote reply -->
+      <input type="hidden" id="quoted_comment_id" name="quoted_comment_id">
+
+      <div id="quote-preview" class="quote-preview" style="display: none;">
+        <h4>Replying to:</h4>
+        <blockquote class="quoted-comment">
+          <div id="quote-content" class="quoted-content"></div>
+          <cite id="quote-author"></cite>
+        </blockquote>
+        <button type="button" id="clear-quote" class="button secondary small">Clear</button>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="button small">Post Comment</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Quote reply functionality
+    const quoteButtons = document.querySelectorAll('.quote-button');
+    const quotePreview = document.getElementById('quote-preview');
+    const quoteContent = document.getElementById('quote-content');
+    const quoteAuthor = document.getElementById('quote-author');
+    const quotedCommentId = document.getElementById('quoted_comment_id');
+    const clearQuoteButton = document.getElementById('clear-quote');
+
+    quoteButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const commentId = this.getAttribute('data-comment-id');
+        const content = this.getAttribute('data-comment-content');
+        const author = this.getAttribute('data-comment-author');
+        const blogUrl = this.getAttribute('data-comment-blog-url');
+
+        quotedCommentId.value = commentId;
+        quoteContent.textContent = content;
+
+        let authorText = author;
+        if (blogUrl) {
+          authorText += ` #${blogUrl}`;
+        }
+        quoteAuthor.textContent = `— ${authorText}`;
+
+        quotePreview.style.display = 'block';
+
+        // Scroll to comment form
+        document.querySelector('.comment-form').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    clearQuoteButton.addEventListener('click', function () {
+      quotedCommentId.value = '';
+      quotePreview.style.display = 'none';
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}

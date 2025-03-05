@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% from "includes/csrf.html" import csrf_token %}
+
+{% block title %}Settings{% endblock %}
+
+{% block header %}
+<h1>publite.me</h1>
+{% with active='settings' %}
+{% include "admin/includes/nav.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="settings-editor">
+  {% if success %}
+  <div class="success">Saved</div>
+  {% endif %}
+
+  <form method="post" action="/admin/settings" enctype="multipart/form-data">
+    {{ csrf_token(request) }}
+    <div class="form-group">
+      <label for="blog_title">Title</label>
+      <input type="text" id="blog_title" name="blog_title" value="{{ settings.blog_title }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="blog_description">Description</label>
+      <input type="text" id="blog_description" name="blog_description" value="{{ settings.blog_description }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="home_page_id">Home Page</label>
+      <select id="home_page_id" name="home_page_id">
+        <option value="">Use Blog Index (Default)</option>
+        {% for page in pages %}
+        <option value="{{ page.id }}" {% if settings.home_page_id==page.id %}selected{% endif %}>
+          {{ page.title }}
+        </option>
+        {% endfor %}
+      </select>
+      <small>Select a page to use as your home page. If none is selected, the blog index will be used.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="theme">Theme</label>
+      <select id="theme" name="theme">
+        <option value="default" {% if settings.theme=="default" %}selected{% endif %}>Default (Dark)</option>
+        <option value="light" {% if settings.theme=="light" %}selected{% endif %}>Light</option>
+        <option value="breeze" {% if settings.theme=="breeze" %}selected{% endif %}>Breeze</option>
+        <option value="floating-ink" {% if settings.theme=="floating-ink" %}selected{% endif %}>Floating Ink</option>
+        <option value="neobrutalism" {% if settings.theme=="neobrutalism" %}selected{% endif %}>Neobrutalism</option>
+        <option value="solarized" {% if settings.theme=="solarized" %}selected{% endif %}>Solarized</option>
+        <option value="typewriter" {% if settings.theme=="typewriter" %}selected{% endif %}>Typewriter</option>
+        <option value="nightfall" {% if settings.theme=="nightfall" %}selected{% endif %}>Nightfall</option>
+        <option value="terminal" {% if settings.theme=="terminal" %}selected{% endif %}>Terminal</option>
+        <option value="neon-noir" {% if settings.theme=="neon-noir" %}selected{% endif %}>Neon Noir</option>
+        <option value="polaroid" {% if settings.theme=="polaroid" %}selected{% endif %}>Polaroid</option>
+        <option value="botanical-lab" {% if settings.theme=="botanical-lab" %}selected{% endif %}>Botanical Lab
+        </option>
+        <option value="vintage-arcade" {% if settings.theme=="vintage-arcade" %}selected{% endif %}>Vintage Arcade
+
+        </option>
+        <option value="analog-synthesizer" {% if settings.theme=="analog-synthesizer" %}selected{% endif %}>Analog
+          Synthesizer
+        </option>
+        <option value="cozy-woodland" {% if settings.theme=="cozy-woodland" %}selected{% endif %}>Cozy Woodland
+        </option>
+        <option value="concrete" {% if settings.theme=="concrete" %}selected{% endif %}>Concrete
+        </option>
+        <option value="coastal-journal" {% if settings.theme=="coastal-journal" %}selected{% endif %}>Coastal Journal
+        </option>
+        <option value="solarpunk-oasis" {% if settings.theme=="solarpunk-oasis" %}selected{% endif %}>Solarpunk Oasis
+        </option>
+        <option value="zine-risograph" {% if settings.theme=="zine-risograph" %}selected{% endif %}>Zine Risograph
+        </option>
+        <option value="glitch-sanctuary" {% if settings.theme=="glitch-sanctuary" %}selected{% endif %}>Glitch Sanctuary
+        </option>
+        <option value="cozy-terminal" {% if settings.theme=="cozy-terminal" %}selected{% endif %}>Cozy Terminal
+        </option>
+        <option value="newspaper" {% if settings.theme=="newspaper" %}selected{% endif %}>Newspaper
+        </option>
+        <option value="wanderlust" {% if settings.theme=="wanderlust" %}selected{% endif %}>Wanderlust
+        </option>
+        <option value="snow" {% if settings.theme=="snow" %}selected{% endif %}>Snow
+        </option>
+      </select>
+      <small>Choose a predefined theme for your blog</small>
+    </div>
+
+    <div class="form-group">
+      <label for="navigation_markdown">Navigation (Markdown)</label>
+      <textarea id="navigation_markdown" name="navigation_markdown"
+        rows="5">{{ settings.navigation_markdown }}</textarea>
+      <small>
+        Use Markdown to create your navigation links. Examples:<br>
+        Simple: [Home](/) | [About](/about)<br>
+        List: - [Home](/)<br>- [About](/about)
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="footer_markdown">Footer (Markdown)</label>
+      <textarea id="footer_markdown" name="footer_markdown" rows="5">{{ settings.footer_markdown }}</textarea>
+      <small>
+        Use Markdown to create your footer content. Examples:<br>
+        Simple: © 2025 My Blog | [github](/link-to-gh)<br>
+        List: - [Contact](/page/contact)<br>- [About](/page/about)
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="custom_css">CSS</label>
+      <textarea id="custom_css" name="custom_css" rows="10">{{ settings.custom_css }}</textarea>
+      <small>Custom CSS for your blog (overrides theme)</small>
+    </div>
+    <div class="form-group">
+      <label for="favicon">Favicon</label>
+      <input type="file" id="favicon" name="favicon" accept="image/*">
+    </div>
+    <br />
+    <div class="form-group">
+      <h3>Comments Settings</h3>
+      <div class="checkbox-label">
+        <input type="checkbox" id="comments_enabled" name="comments_enabled" {% if settings.comments_enabled %}checked{%
+          endif %}>
+        <label for="comments_enabled">Enable comments on posts</label>
+      </div>
+      <div class="checkbox-label">
+        <input type="checkbox" id="allow_anonymous_comments" name="allow_anonymous_comments" {% if
+          settings.allow_anonymous_comments %}checked{% endif %}>
+        <label for="allow_anonymous_comments">Allow anonymous comments (without blog verification)</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <h3>RSS Feed</h3>
+      <div class="checkbox-label">
+        <input type="checkbox" id="rss_enabled" name="rss_enabled" {% if settings.rss_enabled %}checked{% endif %}>
+        <label for="rss_enabled">Enable RSS feed for blog posts</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="button">Save</button>
+      <a href="/" target="_blank" class="button secondary">View Blog</a>
+    </div>
+  </form>
+  <div style="display: flex; justify-content: flex-end;">
+    <a href="/admin/logout" class="button">Logout</a>
+  </div>
+</div>
+{% endblock %}

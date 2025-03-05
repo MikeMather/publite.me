@@ -1,0 +1,65 @@
+:root {
+  --background-color: #002b36;
+
+  --surface-color: #073642;
+
+  --primary-color: #2aa198;
+
+  --secondary-color: #268bd2;
+
+  --error-color: #dc322f;
+
+  --success-color: #859900;
+
+  --text-primary: #93a1a1;
+
+  --text-secondary: #586e75;
+
+  --border-color: #073642;
+
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+
+a {
+  color: #268bd2;
+
+}
+
+a:hover {
+  color: #6c71c4;
+
+}
+
+.button {
+  background-color: #2aa198;
+
+}
+
+.button.secondary {
+  background-color: #586e75;
+
+}
+
+.button.danger {
+  background-color: #dc322f;
+
+}
+
+.post h2 a:hover {
+  color: #6c71c4;
+
+}
+
+.post-content code {
+  color: #b58900;
+
+}
+
+.post-content blockquote {
+  border-left-color: #2aa198;
+
+  color: #657b83;
+
+}

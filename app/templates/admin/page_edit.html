@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% from "includes/csrf.html" import csrf_token %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+{% include "admin/includes/editor.html" %}
+{% endblock %}
+
+{% block body_end %}
+{% include "admin/includes/media_modal.html" %}
+{% endblock %}
+
+{% block header %}
+<h1>publite.me</h1>
+{% with active='new_page' if is_new else 'pages' %}
+{% include "admin/includes/nav.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="post-editor">
+  {% if success %}
+  <div class="success">Saved</div>
+  {% endif %}
+
+  <h2>{{ "New Page" if is_new else "Edit Page" }}</h2>
+
+  <form method="post" action="{{ '/admin/pages/new' if is_new else '/admin/pages/' + page.id|string + '/edit' }}">
+    {{ csrf_token(request) }}
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" value="{{ page.title if page else '' }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="slug">URL</label>
+      <input type="text" id="slug" name="slug" value="{{ page.slug if page else '' }}"
+        placeholder="Leave blank to auto-generate">
+    </div>
+
+    <div class="form-group">
+      <label for="markdown_content">Content (Markdown)</label>
+      <textarea id="markdown_content" name="markdown_content">{{ page.markdown_content if page else '' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input type="checkbox" name="is_published" {% if page and page.is_published %}checked{% endif %}>
+        Published
+      </label>
+    </div>
+
+    <details class="seo-section">
+      <summary>SEO Options</summary>
+      <div class="form-group">
+        <label for="meta_description">Meta Description (max 160 characters)</label>
+        <textarea id="meta_description" name="meta_description" maxlength="160" rows="2"
+          placeholder="Brief description for search engines">{{ page.meta_description if page else '' }}</textarea>
+        <small>Recommended length: 50-160 characters. This appears in search results.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="meta_keywords">Meta Keywords (comma separated)</label>
+        <input type="text" id="meta_keywords" name="meta_keywords" value="{{ page.meta_keywords if page else '' }}"
+          placeholder="keyword1, keyword2, keyword3">
+        <small>Less important for SEO now, but still used by some search engines.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="canonical_url">Canonical URL (optional)</label>
+        <input type="text" id="canonical_url" name="canonical_url" value="{{ page.canonical_url if page else '' }}"
+          placeholder="https://example.com/original-content">
+        <small>Use this if content appears on multiple URLs to prevent duplicate content issues.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="og_image">Social Media Image URL</label>
+        <input type="text" id="og_image" name="og_image" value="{{ page.og_image if page else '' }}"
+          placeholder="https://example.com/image.jpg">
+        <small>Image to display when shared on social media (recommended size: 1200x630).</small>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="no_index" {% if page and page.no_index %}checked{% endif %}>
+          Exclude from search engines
+        </label>
+        <small>Check this to prevent this page from appearing in search results.</small>
+      </div>
+    </details>
+
+    <div class="form-actions">
+      <button type="submit" class="button">Save</button>
+      {% if not is_new %}
+      <a href="/{{ page.slug }}" target="_blank" class="button secondary">View Page</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

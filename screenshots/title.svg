@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300">
+  <rect width="1200" height="300" fill="#121212" rx="8" ry="8"/>
+
+  <g transform="translate(600, 150)">
+    <text font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="72" fill="#4ecdc4" text-anchor="middle" dominant-baseline="middle">
+      publite.me
+    </text>
+
+    <rect x="180" y="-28" width="4" height="50" fill="#4ecdc4">
+      <animate attributeName="opacity" values="1;0;1" dur="1.5s" repeatCount="indefinite" />
+    </rect>
+
+    <text y="60" font-family="Inter, system-ui, sans-serif" font-size="24" fill="#e0e0e0" text-anchor="middle">
+      a thoughtfully minimal, self-hostable blogging platform.
+    </text>
+  </g>
+</svg>

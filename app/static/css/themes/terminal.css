@@ -1,0 +1,382 @@
+:root {
+  --background-color: #000000;
+
+  --surface-color: #0a0a0a;
+
+  --primary-color: #00ff00;
+
+  --secondary-color: #00cccc;
+
+  --tertiary-color: #ffaa00;
+
+  --error-color: #ff0000;
+
+  --success-color: #00ff00;
+
+  --text-primary: #00ff00;
+
+  --text-secondary: #00cc00;
+
+  --border-color: #333333;
+
+  --font-mono: 'Fira Code', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-sans: var(--font-mono);
+  --font-serif: var(--font-mono);
+}
+
+
+body {
+  font-family: var(--font-mono);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--background-color);
+  padding: 1.5rem;
+  max-width: 800px;
+  position: relative;
+}
+
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  width: 0.8rem;
+  height: 1.2rem;
+  background-color: var(--primary-color);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+
+body::before {
+  content: "user@postlite:~$ ./blog";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem 1rem;
+  background-color: var(--surface-color);
+  color: var(--primary-color);
+  font-family: var(--font-mono);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 100;
+}
+
+
+main {
+  margin-top: 2rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-mono);
+  color: var(--primary-color);
+  font-weight: bold;
+  letter-spacing: -0.5px;
+}
+
+header {
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+header h1::before {
+  content: "> ";
+  color: var(--tertiary-color);
+}
+
+header h1 a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+header h1 a:hover {
+  text-decoration: underline;
+}
+
+header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+header p::before {
+  content: "# ";
+  color: var(--secondary-color);
+}
+
+footer {
+  border-top: 1px dashed var(--border-color);
+  color: var(--text-secondary);
+  padding-top: 1rem;
+  margin-top: 2rem;
+  font-size: 0.8rem;
+}
+
+footer::before {
+  content: "/* ";
+  color: var(--secondary-color);
+}
+
+footer::after {
+  content: " */";
+  color: var(--secondary-color);
+}
+
+.post {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.post:last-child {
+  border-bottom: none;
+}
+
+.post h2 {
+  font-size: 1rem;
+  margin: 0;
+  display: inline-block;
+}
+
+.post h2::before {
+  content: "$ cat ";
+  color: var(--tertiary-color);
+  font-size: 0.9rem;
+}
+
+.post h2 a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.post h2 a:hover {
+  text-decoration: underline;
+}
+
+.post-meta {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-style: italic;
+  padding: 0;
+}
+
+.post-meta::before {
+  content: "[";
+  color: var(--secondary-color);
+}
+
+.post-meta::after {
+  content: "]";
+  color: var(--secondary-color);
+}
+
+.post-list-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.post-content {
+  margin: 1.5rem 0;
+  line-height: 1.6;
+}
+
+.post-content p {
+  margin-bottom: 1.2rem;
+}
+
+.post-content p::before {
+  content: "> ";
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.post-content img {
+  max-width: 100%;
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  background-color: var(--surface-color);
+}
+
+.post-content blockquote {
+  border-left: 3px solid var(--tertiary-color);
+  padding-left: 1rem;
+  margin-left: 0;
+  color: var(--tertiary-color);
+  font-style: italic;
+}
+
+.post-content code {
+  font-family: var(--font-mono);
+  background-color: var(--surface-color);
+  padding: 0.2rem 0.4rem;
+  color: var(--secondary-color);
+}
+
+.post-content pre {
+  background-color: var(--surface-color);
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+}
+
+.post-content pre code {
+  background-color: transparent;
+  padding: 0;
+  color: var(--primary-color);
+}
+
+a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--secondary-color);
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+
+.admin-nav a::after {
+  content: " [" attr(accesskey) "]";
+  color: var(--tertiary-color);
+  font-size: 0.8em;
+}
+
+.button {
+  background-color: var(--surface-color);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+.button.secondary {
+  background-color: var(--surface-color);
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+.button.secondary:hover {
+  background-color: rgba(0, 204, 204, 0.1);
+}
+
+.button.danger {
+  background-color: var(--surface-color);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+.button.danger:hover {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+
+.form-actions a {
+  background-color: var(--surface-color);
+  color: var(--secondary-color);
+  border: 1px solid var(--secondary-color);
+}
+
+.form-actions a:hover {
+  background-color: rgba(0, 204, 204, 0.1);
+}
+
+
+.inline-form button {
+  background-color: var(--surface-color);
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+}
+
+.inline-form button:hover {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+input,
+textarea,
+select {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  padding: 0.5rem;
+  border-radius: 0;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.2);
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.read-more::after {
+  content: " -->";
+  color: var(--tertiary-color);
+}
+
+
+.admin-nav a {
+  color: var(--text-secondary);
+  margin-right: 1.5rem;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+  color: var(--primary-color);
+}
+
+.post-item {
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.error {
+  background-color: rgba(255, 0, 0, 0.1);
+  border-left: 3px solid var(--error-color);
+}
+
+.success {
+  background-color: rgba(0, 255, 0, 0.1);
+  border-left: 3px solid var(--success-color);
+}

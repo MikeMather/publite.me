@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ title }}{% endblock %}</title>
+  <link rel="icon" href="/media/favicon.ico" type="image/x-icon">
+
+  <!-- SEO Meta Tags -->
+  {% if post %}
+  {% if post.meta_description %}
+  <meta name="description" content="{{ post.meta_description }}">
+  {% endif %}
+
+  {% if post.meta_keywords %}
+  <meta name="keywords" content="{{ post.meta_keywords }}">
+  {% endif %}
+
+  {% if post.canonical_url %}
+  <link rel="canonical" href="{{ post.canonical_url }}">
+  {% else %}
+  <link rel="canonical" href="{{ request.url }}">
+  {% endif %}
+
+  {% if post.no_index %}
+  <meta name="robots" content="noindex, nofollow">
+  {% endif %}
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ post.title }}">
+  {% if post.meta_description %}
+  <meta property="og:description" content="{{ post.meta_description }}">
+  {% endif %}
+  <meta property="og:url" content="{{ request.url }}">
+  {% if post.og_image %}
+  <meta property="og:image" content="{{ post.og_image }}">
+  {% endif %}
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ post.title }}">
+  {% if post.meta_description %}
+  <meta name="twitter:description" content="{{ post.meta_description }}">
+  {% endif %}
+  {% if post.og_image %}
+  <meta name="twitter:image" content="{{ post.og_image }}">
+  {% endif %}
+
+  <!-- Structured Data / JSON-LD -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "{% if post.is_page %}WebPage{% else %}BlogPosting{% endif %}",
+      "headline": "{{ post.title }}",
+      "url": "{{ request.url }}",
+      {% if post.og_image %}"image": "{{ post.og_image }}",{% endif %}
+      {% if post.meta_description %}"description": "{{ post.meta_description }}",{% endif %}
+      "datePublished": "{{ post.created_at.isoformat() }}",
+      "dateModified": "{{ post.updated_at.isoformat() }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ settings.blog_title }} Author"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ settings.blog_title }}",
+        "logo": {
+          "@type": "ImageObject",
+          "url": ""
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ request.url }}"
+      }
+    }
+    </script>
+  {% elif page %}
+  <!-- Similar SEO tags for pages -->
+  {% if page.meta_description %}
+  <meta name="description" content="{{ page.meta_description }}">
+  {% endif %}
+
+  {% if page.meta_keywords %}
+  <meta name="keywords" content="{{ page.meta_keywords }}">
+  {% endif %}
+
+  {% if page.canonical_url %}
+  <link rel="canonical" href="{{ page.canonical_url }}">
+  {% else %}
+  <link rel="canonical" href="{{ request.url }}">
+  {% endif %}
+
+  {% if page.no_index %}
+  <meta name="robots" content="noindex, nofollow">
+  {% endif %}
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page.title }}">
+  {% if page.meta_description %}
+  <meta property="og:description" content="{{ page.meta_description }}">
+  {% endif %}
+  <meta property="og:url" content="{{ request.url }}">
+  {% if page.og_image %}
+  <meta property="og:image" content="{{ page.og_image }}">
+  {% endif %}
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }}">
+  {% if page.meta_description %}
+  <meta name="twitter:description" content="{{ page.meta_description }}">
+  {% endif %}
+  {% if page.og_image %}
+  <meta name="twitter:image" content="{{ page.og_image }}">
+  {% endif %}
+
+  <!-- Structured Data / JSON-LD -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "headline": "{{ page.title }}",
+      "url": "{{ request.url }}",
+      {% if page.og_image %}"image": "{{ page.og_image }}",{% endif %}
+      {% if page.meta_description %}"description": "{{ page.meta_description }}",{% endif %}
+      "datePublished": "{{ page.created_at.isoformat() }}",
+      "dateModified": "{{ page.updated_at.isoformat() }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ settings.blog_title }} Author"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ settings.blog_title }}"
+      }
+    }
+    </script>
+  {% else %}
+  <!-- Default SEO for other pages -->
+  {% if settings and settings.blog_description %}
+  <meta name="description" content="{{ settings.blog_description }}">
+  {% endif %}
+  <link rel="canonical" href="{{ request.url }}">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}{{ title }}{% endblock %}">
+  {% if settings and settings.blog_description %}
+  <meta property="og:description" content="{{ settings.blog_description }}">
+  {% endif %}
+  <meta property="og:url" content="{{ request.url }}">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{% block twitter_title %}{{ title }}{% endblock %}">
+  {% if settings and settings.blog_description %}
+  <meta name="twitter:description" content="{{ settings.blog_description }}">
+  {% endif %}
+
+  <!-- Structured Data / JSON-LD for website -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "{{ settings.blog_title if settings else 'publite.me' }}",
+      "url": "{{ request.base_url }}",
+      {% if settings and settings.blog_description %}"description": "{{ settings.blog_description }}",{% endif %}
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ request.base_url }}blog?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+  {% endif %}
+
+  <!-- Prevent flash of unstyled content -->
+  <style>
+    .preload * {
+      transition: none !important;
+    }
+
+    html.preload {
+      visibility: hidden;
+    }
+  </style>
+
+  <!-- Preload theme CSS -->
+  {% if settings and settings.theme %}
+  <link rel="preload" href="/static/css/themes/{{ settings.theme }}.css" as="style">
+  {% endif %}
+
+  <!-- Load base styles -->
+  <link rel="stylesheet" href="/static/css/style.css">
+
+  <!-- Load theme styles -->
+  {% if settings and settings.theme %}
+  <link rel="stylesheet" href="/static/css/themes/{{ settings.theme }}.css">
+  {% endif %}
+
+  <!-- Apply custom CSS -->
+  <!-- prettier-ignore-start -->
+  {% if settings and settings.custom_css %}
+  <style>
+    {{ settings.custom_css | safe }}
+  </style>
+  {% endif %}
+  <!-- prettier-ignore-end -->
+
+  <!-- Prevent flash of unstyled content -->
+  <script>
+    document.documentElement.classList.add('preload');
+    window.addEventListener('load', function () {
+      document.documentElement.classList.remove('preload');
+    });
+  </script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  {% block head %}{% endblock %}
+</head>
+
+<body>
+  <header>
+    {% block header %}
+    <h1>
+      <a href="/">{{ settings.blog_title if settings else "publite.me" }}</a>
+    </h1>
+    <p>
+      {{ settings.blog_description if settings else "A minimalist blog" }}
+    </p>
+    {% if navigation_html %}
+    <nav class="site-navigation">
+      {{ navigation_html | safe }}
+    </nav>
+    {% endif %}
+    {% endblock %}
+  </header>
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer>
+    {% block footer %}
+    {% if footer_html %}
+    <div class="site-footer">
+      {{ footer_html | safe }}
+    </div>
+    {% else %}
+    <p>Powered by publite.me</p>
+    {% endif %}
+    {% endblock %}
+  </footer>
+
+  {% block body_end %}{% endblock %}
+</body>
+
+</html>

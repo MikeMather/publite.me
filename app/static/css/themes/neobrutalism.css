@@ -1,0 +1,56 @@
+:root {
+  --background-color: #ffde59;
+  --surface-color: #ffffff;
+  --primary-color: #ff5757;
+  --secondary-color: #5271ff;
+  --error-color: #ff0000;
+  --success-color: #00c04b;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --border-color: #000000;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-sans: 'Arial Black', 'Helvetica Neue', sans-serif;
+}
+
+
+body {
+  box-shadow: 8px 8px 0 #000000;
+  border: 3px solid #000000;
+}
+
+.button,
+.form-actions a {
+  box-shadow: 4px 4px 0 #000000;
+  border: 2px solid #000000;
+  border-radius: 0;
+  font-weight: bold;
+  transform: translateY(-2px);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.button:hover,
+.form-actions a:hover {
+  transform: translateY(0);
+  box-shadow: 2px 2px 0 #000000;
+}
+
+input,
+textarea,
+select {
+  border: 3px solid #000000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.post {
+  border: 2px solid #000000;
+  padding: 0.5rem;
+  box-shadow: 3px 3px 0 #000000;
+  margin-bottom: 1rem;
+}
+
+header,
+footer {
+  border-color: #000000;
+  border-width: 3px;
+}

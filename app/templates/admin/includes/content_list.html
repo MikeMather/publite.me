@@ -1,0 +1,31 @@
+{% if items %}
+<div class="posts-list">
+  {% for item in items %}
+  <div class="post-item">
+    <div class="post-info">
+      <h3 class="post-title">{{ item.title }}</h3>
+      <div class="post-meta" style="max-width: 16rem;">
+        <span class="post-status">{% if item.is_published %}{{ item.created_at.strftime('%Y-%m-%d') }}{% else %}Draft{%
+          endif
+          %}</span>
+      </div>
+    </div>
+    <div class="post-actions">
+      <a href="/admin/{{ item_type }}s/{{ item.id }}/edit" class="button">Edit</a>
+      {% if view_prefix %}
+      <a href="/{{ view_prefix }}/{{ item.slug }}" target="_blank" class="button secondary">View</a>
+      {% else %}
+      <a href="/{{ item.slug }}" target="_blank" class="button secondary">View</a>
+      {% endif %}
+      <form method="post" action="/admin/{{ item_type }}s/{{ item.id }}/delete" class="inline-form"
+        onsubmit="return confirm('Delete this {{ item_type }}?');">
+        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+        <button type="submit" class="button danger">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No {{ item_type }}s yet. <a href="/admin/{{ item_type }}s/new">Create your first {{ item_type }}</a>.</p>
+{% endif %}

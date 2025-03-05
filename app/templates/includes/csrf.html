@@ -1,0 +1,3 @@
+{% macro csrf_token(request) %}
+<input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+{% endmacro %}

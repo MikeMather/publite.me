@@ -1,0 +1,287 @@
+:root {
+  --background-color: #000000;
+
+  --surface-color: #0a0a0a;
+
+  --primary-color: #00ff00;
+
+  --secondary-color: #ff00ff;
+
+  --tertiary-color: #00ffff;
+
+  --error-color: #ff3333;
+
+  --success-color: #33ff66;
+
+  --text-primary: #00ff00;
+
+  --text-secondary: #33cc33;
+
+  --border-color: #0066ff;
+
+  --font-mono: 'Courier New', monospace;
+  --font-sans: 'Press Start 2P', 'VT323', monospace;
+  --font-serif: 'Press Start 2P', 'VT323', monospace;
+}
+
+
+body {
+  background-color: var(--background-color);
+  background-image:
+    linear-gradient(0deg, rgba(255, 0, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0, 255, 255, 0.05) 5px, transparent 5px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.05) 5px, transparent 5px);
+  background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+  image-rendering: pixelated;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(0deg, transparent 98%, rgba(0, 102, 255, 0.5) 100%),
+    linear-gradient(90deg, transparent 98%, rgba(0, 102, 255, 0.5) 100%);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary-color);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+}
+
+header {
+  border-bottom: 2px solid var(--border-color);
+  position: relative;
+}
+
+
+header::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+      #ff0000, #ff7f00, #ffff00, #00ff00,
+      #0000ff, #4b0082, #8b00ff);
+  background-size: 350% 100%;
+  animation: rainbow 3s linear infinite;
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+}
+
+header h1 a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+header h1 a:hover {
+  color: var(--tertiary-color);
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+}
+
+footer {
+  border-top: 2px solid var(--border-color);
+  position: relative;
+}
+
+
+footer::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+      #8b00ff, #4b0082, #0000ff, #00ff00,
+      #ffff00, #ff7f00, #ff0000);
+  background-size: 350% 100%;
+  animation: rainbow 3s linear infinite reverse;
+}
+
+.post {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post h2 a {
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.post h2 a:hover {
+  color: var(--tertiary-color);
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
+}
+
+.post-meta {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  padding: 0;
+  opacity: 0.8;
+}
+
+.post-content {
+  font-family: var(--font-mono);
+}
+
+.post-content blockquote {
+  border-left: 3px solid var(--secondary-color);
+  background-color: rgba(255, 0, 255, 0.1);
+}
+
+.post-content code {
+  color: var(--tertiary-color);
+}
+
+.post-content pre {
+  border: 1px solid var(--border-color);
+}
+
+a {
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--tertiary-color);
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+}
+
+.button {
+  font-family: var(--font-sans);
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: 2px solid var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: transparent;
+  color: var(--primary-color);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.button.secondary {
+  background-color: var(--tertiary-color);
+  border-color: var(--tertiary-color);
+  color: var(--background-color);
+}
+
+.button.secondary:hover {
+  background-color: transparent;
+  color: var(--tertiary-color);
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.button.danger {
+  background-color: var(--error-color);
+  border-color: var(--error-color);
+  color: var(--background-color);
+}
+
+.button.danger:hover {
+  background-color: transparent;
+  color: var(--error-color);
+  text-shadow: 0 0 5px rgba(255, 51, 51, 0.7);
+  box-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+}
+
+input,
+textarea,
+select {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.2);
+}
+
+.error {
+  background-color: rgba(255, 51, 51, 0.1);
+}
+
+.success {
+  background-color: rgba(51, 255, 102, 0.1);
+}
+
+.admin-nav a {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  transition: all 0.3s ease;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+  color: var(--primary-color);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+}
+
+
+.form-actions a {
+  background-color: var(--tertiary-color);
+  color: var(--background-color);
+}
+
+.form-actions a:hover {
+  background-color: transparent;
+  color: var(--tertiary-color);
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+}

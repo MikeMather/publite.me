@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if current_tag %}
+<div class="tag-heading">
+  <h2>Posts tagged: <span class="highlight">{{ current_tag }}</span></h2>
+  <a href="/blog" class="button secondary small">Clear filter</a>
+</div>
+{% endif %}
+
+<div class="posts">
+  {% if posts %}
+  {% for post in posts %}
+  <article class="post">
+    <div class="post-list-item">
+      <h2><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h2>
+      <div class="post-meta">
+        {{ post.created_at.strftime('%B %d, %Y') }}
+      </div>
+    </div>
+    {% if post.tags %}
+    <div class="post-tags">
+      {% for tag in post.tags.split(',') %}
+      <a href="/blog?tag={{ tag.strip() }}" class="tag">#{{ tag.strip() }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </article>
+  {% endfor %}
+  {% else %}
+  <p>No posts yet. Check back soon!</p>
+  {% endif %}
+</div>
+{% endblock %}

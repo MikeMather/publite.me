@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block header %}
+<h1>publite.me</h1>
+{% with active='posts' %}
+{% include "admin/includes/nav.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+  <div class="header-with-actions">
+    <h2>Posts</h2>
+    <a href="/admin/posts/new" class="button">New Post</a>
+  </div>
+  {% with items=posts, item_type='post', view_prefix='blog' %}
+  {% include "admin/includes/content_list.html" %}
+  {% endwith %}
+</div>
+{% endblock %}

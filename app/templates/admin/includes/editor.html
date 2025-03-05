@@ -1,0 +1,139 @@
+<!-- SimpleMDE CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<!-- Highlight.js for syntax highlighting in preview -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/atom-one-dark.min.css">
+<style>
+
+  .CodeMirror {
+    height: 500px;
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .CodeMirror-cursor {
+    border-left: 1px solid var(--text-primary);
+  }
+
+  .editor-toolbar {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    opacity: 0.8;
+    border-radius: 0;
+  }
+
+  .editor-toolbar a {
+    color: var(--text-primary) !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  .editor-toolbar a:hover,
+  .editor-toolbar a.active {
+    background-color: var(--border-color) !important;
+    border: none !important;
+  }
+
+  .editor-toolbar.fullscreen {
+    background-color: var(--background-color);
+  }
+
+  .editor-preview,
+  .editor-preview-side {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+  }
+
+  .editor-preview-side {
+    border-left: 1px solid var(--border-color);
+  }
+
+  .editor-statusbar {
+    color: var(--text-secondary);
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    background-color: var(--surface-color);
+  }
+
+
+  .editor-preview h1,
+  .editor-preview h2,
+  .editor-preview h3,
+  .editor-preview h4,
+  .editor-preview h5,
+  .editor-preview h6,
+  .editor-preview-side h1,
+  .editor-preview-side h2,
+  .editor-preview-side h3,
+  .editor-preview-side h4,
+  .editor-preview-side h5,
+  .editor-preview-side h6 {
+    color: var(--primary-color);
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+  }
+
+  .editor-preview a,
+  .editor-preview-side a {
+    color: var(--primary-color);
+  }
+
+  .editor-preview pre,
+  .editor-preview-side pre {
+    background-color: var(--surface-color);
+    padding: 1em;
+    border-radius: 4px;
+  }
+
+  .editor-preview code,
+  .editor-preview-side code {
+    font-family: var(--font-mono);
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+
+  .editor-preview blockquote,
+  .editor-preview-side blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding-left: 1em;
+    margin-left: 0;
+    color: var(--text-secondary);
+  }
+
+  .markdown-help {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: var(--surface-color);
+    border-left: 3px solid var(--primary-color);
+  }
+
+  .markdown-help h4 {
+    margin-top: 0;
+    color: var(--primary-color);
+  }
+
+  .markdown-help code {
+    font-family: var(--font-mono);
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+
+  .markdown-help ul {
+    padding-left: 1.5rem;
+  }
+</style>
+
+<!-- SimpleMDE JS -->
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<!-- Highlight.js for syntax highlighting in preview -->
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+<!-- Custom editor initialization -->
+<script src="/static/js/editor.js"></script>
