@@ -3,7 +3,7 @@
 
 ### A minimalist, self-hostable, easily customizable blogging platform.
 
-![tests](https://github.com/MikeMather/post-lite/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/MikeMather/publite.me/actions/workflows/tests.yml/badge.svg)
 
 [Documentation](https://publite.me/documentation) | [Browse Themes](https://publite.me/themes)
 
