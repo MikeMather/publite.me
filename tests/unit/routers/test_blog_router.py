@@ -52,6 +52,11 @@ def test_rss_feed_enabled(client, mock_post, mock_settings):
     assert response.status_code == status.HTTP_200_OK
     assert "application/xml" in response.headers["content-type"]
     assert mock_post.title in response.text
+    assert mock_settings.blog_title in response.text
+    assert mock_settings.blog_description in response.text
+    assert mock_post.title in response.text
+    assert mock_post.meta_description in response.text
+    assert f"<link>http://testserver/blog/{mock_post.slug}</link>" in response.text
 
 
 def test_rss_feed_disabled(client, mock_settings):

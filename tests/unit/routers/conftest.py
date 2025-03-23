@@ -78,7 +78,7 @@ def mock_post(db_session):
         is_page=False,
         created_at=datetime.now(),
         updated_at=datetime.now(),
-        meta_description="",
+        meta_description="Test post meta description",
     )
     db_session.add(post)
     db_session.commit()
