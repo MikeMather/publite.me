@@ -15,8 +15,8 @@
         {% else %}
         <description><![CDATA[{{ post.content | truncate(400) }}]]></description>
         {% endif %}
-        <link>{{ request.base_url }}post/{{ post.slug }}</link>
-        <guid>{{ request.base_url }}post/{{ post.slug }}</guid>
+        <link>{{ request.base_url }}blog/{{ post.slug }}</link>
+        <guid>{{ request.base_url }}blog/{{ post.slug }}</guid>
         <pubDate>{{ post.created_at.strftime('%a, %d %b %Y %H:%M:%S GMT') }}</pubDate>
     </item>
     {% endfor %}
