@@ -69,7 +69,7 @@ def test_get_posts(db_session: Session):
     create_post(db_session, post2)
     create_post(db_session, post3)
 
-    all_posts = get_posts(db_session)
+    all_posts = get_posts(db_session, sort_by="created_at")
     assert len(all_posts) == 2
     assert all_posts[0].title == "Draft Post"
     assert all_posts[1].title == "Published Post"

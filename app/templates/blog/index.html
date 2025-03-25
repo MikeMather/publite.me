@@ -15,7 +15,7 @@
     <div class="post-list-item">
       <h2><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h2>
       <div class="post-meta">
-        {{ post.created_at.strftime('%B %d, %Y') }}
+        {{ post.published_at.strftime('%B %d, %Y') if post.published_at else post.created_at.strftime('%B %d, %Y') }}
       </div>
     </div>
     {% if post.tags %}
