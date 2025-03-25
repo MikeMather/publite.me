@@ -32,6 +32,13 @@
     </div>
 
     <div class="form-group">
+      <label for="published_at">Published date</label>
+      <input type="date" id="published_at" name="published_at"
+        value="{{ post.published_at.strftime('%Y-%m-%d') if post and post.published_at else '' }}"
+        placeholder="Optional">
+    </div>
+
+    <div class="form-group">
       <label for="slug">URL</label>
       <input type="text" id="slug" name="slug" value="{{ post.slug if post else '' }}"
         placeholder="Leave blank to auto-generate">

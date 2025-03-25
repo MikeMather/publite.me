@@ -16,6 +16,7 @@ def create_post(db: Session, post) -> Post:
         markdown_content=post.markdown_content,
         content=html_content,
         is_published=post.is_published,
+        published_at=post.published_at,
         is_page=post.is_page,
         tags=post.tags if hasattr(post, "tags") else "",
     )

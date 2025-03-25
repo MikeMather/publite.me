@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import patch
 
 import pytest
@@ -103,6 +104,7 @@ def test_create_post(client, mock_user, db_session):
     assert post is not None
     assert post.title == "Test Post"
     assert post.is_published is True
+    assert post.published_at is not None
     assert post.is_page is False
 
 
@@ -114,7 +116,7 @@ def test_edit_post_page(client, mock_user, mock_post):
         assert mock_post.title in response.text
 
 
-def test_update_post(client, mock_user, mock_post):
+def test_update_post(client, mock_user, mock_post, db_session):
     """Test updating a post."""
     with patch("app.routers.admin_router.get_user_or_redirect", return_value=mock_user):
         response = client.post(
@@ -124,12 +126,50 @@ def test_update_post(client, mock_user, mock_post):
                 "slug": mock_post.slug,
                 "markdown_content": "# Updated Content",
                 "is_published": "true",
+                "published_at": "2025-01-01",
             },
         )
         assert (
             response.url
             == f"http://testserver/admin/posts/{mock_post.id}/edit?success=true"
         )
+
+    post = db_session.query(Post).first()
+    assert post is not None
+    assert post.title == "Updated Title"
+    assert post.is_published is True
+    assert post.published_at is not None
+    assert post.is_page is False
+    assert post.content == "<h1>Updated Content</h1>"
+
+
+def test_publish_post(client, mock_user, mock_post, db_session):
+    """Test updating a post from draft to published"""
+    mock_post.is_published = False
+    mock_post.published_at = None
+    db_session.add(mock_post)
+    with patch("app.routers.admin_router.get_user_or_redirect", return_value=mock_user):
+        response = client.post(
+            f"/admin/posts/{mock_post.id}/edit",
+            data={
+                "title": "Updated Title",
+                "slug": mock_post.slug,
+                "markdown_content": "# Updated Content",
+                "is_published": "true",
+                "published_at": "",
+            },
+        )
+        assert (
+            response.url
+            == f"http://testserver/admin/posts/{mock_post.id}/edit?success=true"
+        )
+
+    post = db_session.query(Post).first()
+    assert post is not None
+    assert post.title == "Updated Title"
+    assert post.is_published is True
+    assert post.published_at is not None
+    assert post.published_at.strftime("%Y-%m-%d") == datetime.now().strftime("%Y-%m-%d")
 
 
 def test_delete_post(client, mock_user, mock_post):

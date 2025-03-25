@@ -36,6 +36,7 @@ class Post(Base):
     tags = Column(String, default="")  # Comma separated
     is_published = Column(Boolean, default=False)
     is_page = Column(Boolean, default=False)
+    published_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

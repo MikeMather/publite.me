@@ -1,7 +1,7 @@
 import os
 import secrets
 import shutil
-from datetime import datetime
+from datetime import date, datetime, time
 from typing import Optional
 
 from fastapi import (
@@ -225,6 +225,7 @@ async def create_post(
     tags: str = Form(""),
     markdown_content: str = Form(...),
     is_published: bool = Form(False),
+    published_at: Optional[str] = Form(None),
     meta_description: str = Form(""),
     meta_keywords: str = Form(""),
     canonical_url: str = Form(""),
@@ -237,12 +238,22 @@ async def create_post(
         existing_slugs = posts.get_all_slugs(db)
         slug = utils.generate_unique_slug(title, existing_slugs)
 
+    # Set the published date to the current date if the post is published and no date is specified
+    if is_published and not published_at:
+        published_at_datetime = datetime.utcnow()
+    elif published_at.strip():
+        date_obj = datetime.strptime(published_at, "%Y-%m-%d").date()
+        published_at_datetime = datetime.combine(date_obj, time())
+    else:
+        published_at_datetime = None
+
     post = schemas.PostCreate(
         title=title,
         slug=slug,
         tags=tags,
         markdown_content=markdown_content,
         is_published=is_published,
+        published_at=published_at_datetime,
         is_page=False,
         meta_description=meta_description,
         meta_keywords=meta_keywords,
@@ -290,6 +301,7 @@ async def update_post(
     slug: str = Form(...),
     tags: str = Form(""),
     markdown_content: str = Form(...),
+    published_at: Optional[str] = Form(None),
     is_published: bool = Form(False),
     meta_description: str = Form(""),
     meta_keywords: str = Form(""),
@@ -303,12 +315,22 @@ async def update_post(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
+    # Set the published date to the date the post was published if it was not specified
+    if not post.is_published and is_published and not published_at:
+        published_at_datetime = datetime.utcnow()
+    elif published_at.strip():
+        date_obj = datetime.strptime(published_at, "%Y-%m-%d").date()
+        published_at_datetime = datetime.combine(date_obj, time())
+    else:
+        published_at_datetime = None
+
     post_update = schemas.PostUpdate(
         title=title,
         slug=slug,
         tags=tags,
         markdown_content=markdown_content,
         is_published=is_published,
+        published_at=published_at_datetime,
         is_page=post.is_page,
         meta_description=meta_description,
         meta_keywords=meta_keywords,

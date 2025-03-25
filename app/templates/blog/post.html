@@ -6,10 +6,7 @@
 <article class="post-full">
   <h1>{{ post.title }}</h1>
   <div class="post-meta">
-    {{ post.created_at.strftime('%B %d, %Y') }}
-    {% if post.updated_at and post.updated_at != post.created_at %}
-    <span class="updated">(Updated: {{ post.updated_at.strftime('%B %d, %Y') }})</span>
-    {% endif %}
+    {{ post.published_at.strftime('%B %d, %Y') if post.published_at else '' }}
   </div>
   {% if post.tags %}
   <div class="post-tags">

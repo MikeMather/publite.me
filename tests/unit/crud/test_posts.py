@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from app.crud.posts import (
@@ -19,6 +21,7 @@ def test_create_post(db_session: Session):
         slug="test-post-create",
         markdown_content="# Test\nThis is a test post",
         is_published=True,
+        published_at=datetime.utcnow(),
         is_page=False,
         tags="test,example",
     )
@@ -30,6 +33,7 @@ def test_create_post(db_session: Session):
     assert post.markdown_content == "# Test\nThis is a test post"
     assert post.content == "<h1>Test</h1>\n<p>This is a test post</p>"
     assert post.is_published is True
+    assert post.published_at is not None
     assert post.is_page is False
     assert post.tags == "test,example"
 
@@ -40,6 +44,7 @@ def test_get_posts(db_session: Session):
         slug="published-post-1",
         markdown_content="Published content",
         is_published=True,
+        published_at=datetime.utcnow(),
         is_page=False,
         tags="test",
     )
@@ -48,6 +53,7 @@ def test_get_posts(db_session: Session):
         slug="draft-post-1",
         markdown_content="Draft content",
         is_published=False,
+        published_at=None,
         is_page=False,
     )
     post3 = PostCreate(
@@ -55,6 +61,7 @@ def test_get_posts(db_session: Session):
         slug="published-page-1",
         markdown_content="Page content",
         is_published=True,
+        published_at=datetime.utcnow(),
         is_page=True,
     )
 
@@ -71,6 +78,7 @@ def test_get_posts(db_session: Session):
     all_posts = get_posts(db_session)
     assert len(published_posts) == 1
     assert published_posts[0].title == "Published Post"
+    assert published_posts[0].published_at is not None
 
     all_content = get_posts(db_session, include_pages=True)
     assert len(all_content) == 3
