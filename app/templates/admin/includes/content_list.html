@@ -4,11 +4,19 @@
   <div class="post-item">
     <div class="post-info">
       <h3 class="post-title">{{ item.title }}</h3>
+      {% if item_type == 'post' %}
       <div class="post-meta" style="max-width: 16rem;">
-        <span class="post-status">{% if item.is_published %}{{ item.created_at.strftime('%Y-%m-%d') }}{% else %}Draft{%
+        <span class="post-status">{% if item.is_published %}{{
+          'Published ' + item.published_at.strftime('%Y-%m-%d') if item.published_at else 'Published ' }}{% else
+          %}Draft{%
           endif
           %}</span>
       </div>
+      {% else %}
+      <div class="post-meta" style="max-width: 16rem;">
+        <span class="post-status">Updated {{ item.updated_at.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div>
+      {% endif %}
     </div>
     <div class="post-actions">
       <a href="/admin/{{ item_type }}s/{{ item.id }}/edit" class="button">Edit</a>

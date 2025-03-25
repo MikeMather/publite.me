@@ -16,6 +16,7 @@ def create_post(db: Session, post) -> Post:
         markdown_content=post.markdown_content,
         content=html_content,
         is_published=post.is_published,
+        published_at=post.published_at,
         is_page=post.is_page,
         tags=post.tags if hasattr(post, "tags") else "",
     )
@@ -32,6 +33,7 @@ def get_posts(
     published_only: bool = False,
     include_pages: bool = False,
     tag: str = None,
+    sort_by: str = "published_at",
 ) -> List[Post]:
     query = db.query(Post)
     if published_only:
@@ -46,7 +48,11 @@ def get_posts(
             | (Post.tags.ilike(f"%,{tag}"))
             | (Post.tags == tag)
         )
-    return query.order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
+    if sort_by == "published_at":
+        query = query.order_by(Post.published_at.desc())
+    elif sort_by == "created_at":
+        query = query.order_by(Post.created_at.desc())
+    return query.offset(skip).limit(limit).all()
 
 
 def get_pages(

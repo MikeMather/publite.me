@@ -26,6 +26,7 @@ class PostBase(BaseModel):
     markdown_content: str
     tags: Optional[str] = ""
     is_published: bool = False
+    published_at: Optional[datetime] = None
     is_page: bool = False
     meta_description: Optional[str] = ""
     meta_keywords: Optional[str] = ""
@@ -44,6 +45,7 @@ class PostUpdate(BaseModel):
     markdown_content: Optional[str] = None
     tags: Optional[str] = None
     is_published: Optional[bool] = None
+    published_at: Optional[datetime] = None
     is_page: Optional[bool] = None
     meta_description: Optional[str] = None
     meta_keywords: Optional[str] = None

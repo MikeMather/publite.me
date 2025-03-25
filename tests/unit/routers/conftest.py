@@ -75,6 +75,7 @@ def mock_post(db_session):
         content="<h1>This is a test post content.</h1>",
         slug="test-post",
         is_published=True,
+        published_at=datetime.now(),
         is_page=False,
         created_at=datetime.now(),
         updated_at=datetime.now(),
