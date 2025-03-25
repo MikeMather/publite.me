@@ -34,8 +34,7 @@
     <div class="form-group">
       <label for="published_at">Published date</label>
       <input type="date" id="published_at" name="published_at"
-        value="{{ post.published_at.strftime('%Y-%m-%d') if post and post.published_at else '' }}"
-        placeholder="Optional">
+        value="{{ post.published_at.strftime('%Y-%m-%d') if post and post.published_at else '' }}">
     </div>
 
     <div class="form-group">
