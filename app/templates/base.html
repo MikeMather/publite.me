@@ -57,7 +57,7 @@
       "url": "{{ request.url }}",
       {% if post.og_image %}"image": "{{ post.og_image }}",{% endif %}
       {% if post.meta_description %}"description": "{{ post.meta_description }}",{% endif %}
-      "datePublished": "{{ post.created_at.isoformat() }}",
+      "datePublished": "{{ post.published_at.isoformat() if post.published_at else post.created_at.isoformat() }}",
       "dateModified": "{{ post.updated_at.isoformat() }}",
       "author": {
         "@type": "Person",
