@@ -83,8 +83,8 @@ jobs:
           context: .
           push: true
           tags: |
-            mikemather/publite.me:latest
-            mikemather/publite.me:${{ env.NEW_VERSION }}
+            mikemather/publite:latest
+            mikemather/publite:${{ env.NEW_VERSION }}
 
       - name: Generate changelog
         id: changelog
