@@ -15,6 +15,10 @@
 |---------|---------|
 | ![Solarized](/screenshots/typewriter.png) | ![analog](/screenshots/polaroid.png) |
 
+|  |  |
+|---------|---------|
+| ![Noir](/screenshots/noir.png) | ![newbrutal](/screenshots/neobrutalism.png) |
+
 
 ## Features
 
