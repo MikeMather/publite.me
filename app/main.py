@@ -2,6 +2,7 @@ import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response, status
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -12,6 +13,7 @@ from app import utils
 from app.auth import SECRET_KEY
 from app.crud import settings
 from app.database import get_db
+from app.middleware.static_cache import CacheableStaticFiles
 from app.routers import admin_router, blog_router, media_router
 from app.session import get_session
 
@@ -45,8 +47,9 @@ os.makedirs(f"{MEDIA_ROOT}/original", exist_ok=True)
 os.makedirs(f"{MEDIA_ROOT}/thumbnails", exist_ok=True)
 os.makedirs(f"{MEDIA_ROOT}/medium", exist_ok=True)
 
-app.mount("/static", StaticFiles(directory=STATIC_ROOT), name="static")
-app.mount("/media", StaticFiles(directory=MEDIA_ROOT), name="media")
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.mount("/static", CacheableStaticFiles(directory=STATIC_ROOT), name="static")
+app.mount("/media", CacheableStaticFiles(directory=MEDIA_ROOT), name="media")
 
 templates = Jinja2Templates(directory="app/templates")
 
