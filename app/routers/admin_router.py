@@ -83,6 +83,13 @@ async def get_user(request: Request, db: Session = Depends(get_db)):
     return db.query(User).filter(User.id == user_id).first()
 
 
+@router.get("", include_in_schema=False)
+async def admin_redirect():
+    return RedirectResponse(
+        url="/admin/", status_code=status.HTTP_308_PERMANENT_REDIRECT
+    )
+
+
 # Setup page - only shown if no users exist
 @router.get("/setup", response_class=HTMLResponse)
 async def setup_page(

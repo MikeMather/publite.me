@@ -53,8 +53,8 @@ app.mount("/media", CacheableStaticFiles(directory=MEDIA_ROOT), name="media")
 
 templates = Jinja2Templates(directory="app/templates")
 
-app.include_router(blog_router.router)
 app.include_router(admin_router.router)
+app.include_router(blog_router.router)
 app.include_router(media_router.router)
 
 
