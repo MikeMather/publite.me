@@ -493,7 +493,7 @@
         .then(media => {
           let mediaPreview = '';
           if (media.mime_type.startsWith('image/')) {
-            mediaPreview = `<img src="${media.medium_path}" alt="${media.original_filename}">`;
+            mediaPreview = `<img src="/media/${media.medium_path}" alt="${media.original_filename}">`;
           } else {
             mediaPreview = `
               <div class="media-placeholder large">
@@ -540,8 +540,8 @@
                 <div class="media-usage-title">Markdown</div>
                 <div class="media-usage-code">
                   ${media.mime_type.startsWith('image/') ?
-              `![/media/${media.original_filename}](${media.medium_path})` :
-              `[/media/${media.original_filename}](${media.file_path})`}
+              `![/media/${media.original_filename}](/media/${media.medium_path})` :
+              `[/media/${media.original_filename}](/media/${media.file_path})`}
                 </div>
               </div>
             </div>
@@ -559,9 +559,9 @@
         .then(media => {
           let markdownCode = '';
           if (media.mime_type.startsWith('image/')) {
-            markdownCode = `![${media.original_filename}](${media.medium_path})`;
+            markdownCode = `![${media.original_filename}](/media/${media.medium_path})`;
           } else {
-            markdownCode = `[${media.original_filename}](${media.file_path})`;
+            markdownCode = `[${media.original_filename}](/media/${media.file_path})`;
           }
 
           localStorage.setItem('postlite-media-insert', markdownCode);
