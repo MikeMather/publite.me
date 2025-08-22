@@ -175,7 +175,7 @@ async def dashboard(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_user_or_redirect),
 ):
-    all_posts = posts.get_posts(db, include_pages=False, sort_by="published_at")
+    all_posts = posts.get_posts(db, include_pages=False, sort_by="created_at")
     _settings = settings.get_settings(db)
 
     return request.state.templates.TemplateResponse(
