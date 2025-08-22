@@ -314,19 +314,16 @@
     const closeModal = document.getElementById('closeModal');
     const mediaDetails = document.getElementById('mediaDetails');
 
-    // Upload area click handler
     uploadArea.addEventListener('click', function () {
       fileInput.click();
     });
 
-    // File input change handler
     fileInput.addEventListener('change', function () {
       if (fileInput.files.length > 0) {
         uploadFiles(fileInput.files);
       }
     });
 
-    // Drag and drop handlers
     uploadArea.addEventListener('dragover', function (e) {
       e.preventDefault();
       uploadArea.classList.add('drag-over');
@@ -345,45 +342,38 @@
       }
     });
 
-    // Close modal handler
     closeModal.addEventListener('click', function () {
       mediaModal.classList.remove('active');
     });
 
-    // Click outside modal to close
     mediaModal.addEventListener('click', function (e) {
       if (e.target === mediaModal) {
         mediaModal.classList.remove('active');
       }
     });
 
-    // Media item click handler
     if (mediaGrid) {
       mediaGrid.addEventListener('click', function (e) {
         const mediaItem = e.target.closest('.media-item');
         if (!mediaItem) return;
 
-        // Handle insert button click
         if (e.target.closest('.insert-btn')) {
           const mediaId = mediaItem.dataset.id;
           insertMedia(mediaId);
           return;
         }
 
-        // Handle delete button click
         if (e.target.closest('.delete-btn')) {
           const mediaId = mediaItem.dataset.id;
           deleteMedia(mediaId, mediaItem);
           return;
         }
 
-        // Show media details
         const mediaId = mediaItem.dataset.id;
         showMediaDetails(mediaId);
       });
     }
 
-    // Upload files function
     function uploadFiles(files) {
       uploadProgress.style.display = 'block';
       progressBar.style.width = '0%';
@@ -407,7 +397,6 @@
             uploadedCount++;
             progressBar.style.width = (uploadedCount / totalFiles * 100) + '%';
 
-            // Add the new media item to the grid
             addMediaItemToGrid(data);
 
             if (uploadedCount === totalFiles) {
@@ -426,9 +415,7 @@
       });
     }
 
-    // Add media item to grid
     function addMediaItemToGrid(media) {
-      // Create no-media message if it doesn't exist
       if (document.querySelector('.no-media')) {
         document.querySelector('.no-media').remove();
 
@@ -448,7 +435,7 @@
 
       let mediaContent = '';
       if (media.mime_type.startsWith('image/')) {
-        mediaContent = `<img src="${media.thumbnail_path}" alt="${media.original_filename}">`;
+        mediaContent = `<img src="/media/${media.thumbnail_path}" alt="${media.original_filename}">`;
       } else {
         mediaContent = `
           <div class="media-placeholder">
@@ -486,14 +473,13 @@
       mediaGrid.prepend(mediaItem);
     }
 
-    // Show media details
     function showMediaDetails(mediaId) {
       fetch(`/admin/media/${mediaId}`)
         .then(response => response.json())
         .then(media => {
           let mediaPreview = '';
           if (media.mime_type.startsWith('image/')) {
-            mediaPreview = `<img src="${media.medium_path}" alt="${media.original_filename}">`;
+            mediaPreview = `<img src="/media/${media.medium_path}" alt="${media.original_filename}">`;
           } else {
             mediaPreview = `
               <div class="media-placeholder large">
@@ -540,8 +526,8 @@
                 <div class="media-usage-title">Markdown</div>
                 <div class="media-usage-code">
                   ${media.mime_type.startsWith('image/') ?
-              `![/media/${media.original_filename}](${media.medium_path})` :
-              `[/media/${media.original_filename}](${media.file_path})`}
+              `![${media.original_filename}](/media/${media.medium_path})` :
+              `[${media.original_filename}](/media/${media.file_path})`}
                 </div>
               </div>
             </div>
@@ -559,9 +545,9 @@
         .then(media => {
           let markdownCode = '';
           if (media.mime_type.startsWith('image/')) {
-            markdownCode = `![${media.original_filename}](${media.medium_path})`;
+            markdownCode = `![${media.original_filename}](/media/${media.medium_path})`;
           } else {
-            markdownCode = `[${media.original_filename}](${media.file_path})`;
+            markdownCode = `[${media.original_filename}](/media/${media.file_path})`;
           }
 
           localStorage.setItem('postlite-media-insert', markdownCode);
@@ -575,7 +561,6 @@
         });
     }
 
-    // Delete media
     function deleteMedia(mediaId, mediaItem) {
       if (confirm('Are you sure you want to delete this media file? This cannot be undone.')) {
         fetch(`/admin/media/${mediaId}`, {
@@ -589,7 +574,6 @@
             if (data.success) {
               mediaItem.remove();
 
-              // If no more media items, show the no-media message
               if (mediaGrid.children.length === 0) {
                 const noMedia = document.createElement('div');
                 noMedia.className = 'no-media';
