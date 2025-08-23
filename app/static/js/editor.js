@@ -2,33 +2,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const markdownEditor = document.getElementById("markdown_content");
 
   if (markdownEditor) {
-    // Get the form that contains the markdown editor
     const form = markdownEditor.closest("form");
 
-    // Determine if this is a post or page editor based on the form action
     const formAction = form.getAttribute("action");
     const isPageEditor = formAction.includes("/pages/");
 
-    // Extract the ID from the form action to create a unique ID for each post/page
-    let contentId = "new";
-    const idMatch = formAction.match(/\/(\d+)\/edit/);
-    if (idMatch && idMatch[1]) {
-      contentId = idMatch[1];
-    }
-
-    const uniqueId = isPageEditor
-      ? `postlite-page-editor-${contentId}`
-      : `postlite-post-editor-${contentId}`;
-
-    // Initialize SimpleMDE
     const simplemde = new SimpleMDE({
       element: markdownEditor,
       spellChecker: false,
-      autosave: {
-        enabled: true,
-        uniqueId: uniqueId,
-        delay: 1000,
-      },
       toolbar: [
         "bold",
         "italic",
@@ -42,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           name: "insert-media",
           action: function (editor) {
-            // Dispatch custom event to open the media modal
             window.dispatchEvent(
               new CustomEvent("open-media-modal", {
                 detail: { editor: editor },
@@ -69,10 +49,8 @@ document.addEventListener("DOMContentLoaded", function () {
         codeSyntaxHighlighting: true,
       },
       previewRender: function (plainText) {
-        // First, convert markdown to HTML
         const htmlText = simplemde.markdown(plainText);
 
-        // After the preview is rendered, apply syntax highlighting to code blocks
         setTimeout(function () {
           const previewEl = simplemde.codemirror.display.wrapper.nextSibling;
           if (previewEl) {
@@ -87,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     });
 
-    // Add keyboard shortcuts for common actions
     simplemde.codemirror.setOption("extraKeys", {
       "Ctrl-B": function (cm) {
         simplemde.toggleBold();
@@ -102,7 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
         simplemde.drawImage();
       },
       "Ctrl-Alt-M": function (cm) {
-        // Dispatch custom event to open the media modal
         window.dispatchEvent(
           new CustomEvent("open-media-modal", {
             detail: { editor: { codemirror: cm } },
@@ -116,29 +92,5 @@ document.addEventListener("DOMContentLoaded", function () {
         simplemde.toggleSideBySide();
       },
     });
-
-    // Add form submit event listener to update the textarea with SimpleMDE content
-    if (form) {
-      form.addEventListener("submit", function () {
-        // Update the original textarea with the current content from SimpleMDE
-        markdownEditor.value = simplemde.value();
-        // Clear the autosave data after successful submission
-        // We'll use setTimeout to give the form time to submit
-        setTimeout(function () {
-          // Check if the form was successfully submitted (page changed)
-          // If not, the autosave data will remain
-          if (document.querySelector(".success")) {
-            localStorage.removeItem(`smde_${uniqueId}`);
-          }
-        }, 500);
-      });
-    }
-
-    // Check for success message and clear autosave if present
-    if (document.querySelector(".success")) {
-      // If there's a success message on the page, clear the autosave data
-      // This handles the case when the page is reloaded after a successful submission
-      localStorage.removeItem(`smde_${uniqueId}`);
-    }
   }
 });
