@@ -7,6 +7,10 @@ from sqlalchemy.orm import Session
 
 from app import utils
 from app.models import Post
+    
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def parse_markdown_frontmatter(content: str) -> Tuple[dict, str]:
@@ -157,21 +161,6 @@ def import_markdown_post(
     db.refresh(db_post)
     return db_post
 
-
-def import_multiple_markdown_posts(
-    db: Session, 
-    markdown_files: List[Tuple[str, str]]  # List of (filename, content) tuples
-) -> List[Post]:
-    """
-    Import multiple markdown posts.
-    Returns list of created posts.
-    """
-    created_posts = []
-    
-import logging
-
-logger = logging.getLogger(__name__)
-
 def import_multiple_markdown_posts(
     db: Session, 
     markdown_files: List[Tuple[str, str]]
@@ -193,8 +182,6 @@ def import_multiple_markdown_posts(
         except Exception as e:
             logger.error("Error importing %s: %s", filename, e, exc_info=True)
             continue
-    
-    return created_posts
     
     return created_posts
 

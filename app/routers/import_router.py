@@ -49,8 +49,6 @@ async def upload_files(
     """Handle file uploads and import posts"""
     await get_user_or_redirect(request, db)
 
-    # Validate CSRF token
-    session = await get_session(request, db)
     expected_token = getattr(request.state, 'csrf_token', '')
     if csrf_token != expected_token:
         raise HTTPException(status_code=403, detail="Invalid CSRF token")
@@ -62,7 +60,7 @@ async def upload_files(
     errors = []
     
     for file in files:
-        if not file.filename.endswith(('.md', '.markdown')):
+        if not file.filename.lower().endswith(('.md', '.markdown')):
             errors.append(f"{file.filename}: Only .md and .markdown files are supported")
             continue
         
