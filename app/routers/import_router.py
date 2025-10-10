@@ -44,7 +44,25 @@ async def import_page(request: Request, db: Session = Depends(get_db)):
 async def upload_files(
     request: Request,
     files: List[UploadFile] = File(...),
+@router.post("/upload")
+async def upload_files(
+    request: Request,
+    files: List[UploadFile] = File(...),
     csrf_token: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Handle file uploads and import posts"""
+    await get_user_or_redirect(request, db)
+
+    # Validate CSRF token
+    session = await get_session(request, db)
+    expected_token = getattr(request.state, 'csrf_token', '')
+    if csrf_token != expected_token:
+        raise HTTPException(status_code=403, detail="Invalid CSRF token")
+
+    if not files:
+        ...
+    # rest of the handler remains unchanged
     db: Session = Depends(get_db)
 ):
     """Handle file uploads and import posts"""
