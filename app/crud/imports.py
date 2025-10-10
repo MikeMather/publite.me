@@ -168,19 +168,33 @@ def import_multiple_markdown_posts(
     """
     created_posts = []
     
+import logging
+
+logger = logging.getLogger(__name__)
+
+def import_multiple_markdown_posts(
+    db: Session, 
+    markdown_files: List[Tuple[str, str]]
+) -> List[Post]:
+    """
+    Import multiple markdown posts.
+    Returns list of created posts.
+    """
+    created_posts = []
+    
     for filename, content in markdown_files:
         try:
-            # Check if content has basic structure
             if not content.strip():
-                print(f"Skipping {filename}: empty content")
+                logger.warning("Skipping %s: empty content", filename)
                 continue
                 
             post = import_markdown_post(db, content, filename)
             created_posts.append(post)
         except Exception as e:
-            # Log error but continue with other files
-            print(f"Error importing {filename}: {e}")
+            logger.error("Error importing %s: %s", filename, e, exc_info=True)
             continue
+    
+    return created_posts
     
     return created_posts
 
