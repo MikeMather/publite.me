@@ -128,7 +128,8 @@ def import_markdown_post(
                     break
                 except ValueError:
                     continue
-        except:
+        except (ValueError, TypeError, KeyError):
+            # Date parsing failed, leave published_at as None
             pass
     
     # Convert markdown to HTML
