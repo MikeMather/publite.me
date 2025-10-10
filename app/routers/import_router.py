@@ -100,8 +100,18 @@ async def upload_files(
         message += f". {error_count} error(s) occurred."
     
     # Redirect to admin with success message
+# At the top of app/routers/import_router.py
+from urllib.parse import quote
+
+# ... other imports ...
+
+
+# Inside the function, before the redirect
+    # Redirect to admin with success message
+    encoded_message = quote(message)
+    encoded_errors = quote('|'.join(errors)) if errors else ''
     return RedirectResponse(
-        url=f"/admin?message={message}&errors={'|'.join(errors) if errors else ''}",
+        url=f"/admin?message={encoded_message}&errors={encoded_errors}",
         status_code=302
     )
 
