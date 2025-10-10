@@ -90,22 +90,3 @@ async def upload_files(
     )
 
 
-@router.post("/text")
-async def import_text(
-    request: Request,
-    content: str = Form(...),
-    filename: str = Form("imported_post.md"),
-    csrf_token: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    """Import post from text content"""
-    await get_user_or_redirect(request, db)
-    
-    try:
-        post = imports.import_markdown_post(db, content, filename)
-        return RedirectResponse(
-            url=f"/admin/posts/{post.id}/edit?message=Post imported successfully",
-            status_code=302
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
