@@ -74,24 +74,22 @@ async def upload_files(
     imported_posts = []
     errors = []
     
-    try:
-        for file in files:
-            if not file.filename.endswith(('.md', '.markdown')):
-                errors.append(f"{file.filename}: Only .md and .markdown files are supported")
-                continue
-            
+    for file in files:
+        if not file.filename.endswith(('.md', '.markdown')):
+            errors.append(f"{file.filename}: Only .md and .markdown files are supported")
+            continue
+        
+        try:
             content = await file.read()
             content_str = content.decode('utf-8')
-            
-            # Import as single post
-            try:
-                post = imports.import_markdown_post(db, content_str, file.filename)
-                imported_posts.append(post)
-            except Exception as e:
-                errors.append(f"{file.filename}: {str(e)}")
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+            post = imports.import_markdown_post(db, content_str, file.filename)
+            imported_posts.append(post)
+        except UnicodeDecodeError as e:
+            errors.append(f"{file.filename}: Invalid UTF-8 encoding")
+        except ValueError as e:
+            errors.append(f"{file.filename}: {e!s}")
+        except Exception as e:
+            errors.append(f"{file.filename}: Unexpected error - {e!s}")
     
     # Prepare response message
     success_count = len(imported_posts)
