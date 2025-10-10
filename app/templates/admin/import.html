@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Import Posts - publite.me{% endblock %}
+
+{% block header %}
+<h1>publite.me</h1>
+{% with active='posts' %}
+{% include "admin/includes/nav.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+  <div class="header-with-actions">
+    <h2>Import Posts</h2>
+    <div class="action-buttons">
+      <a href="/admin" class="button secondary">Back to Dashboard</a>
+    </div>
+  </div>
+  
+  <div class="import-content">
+    <p>Import markdown files to create new posts. You can upload single files or multiple files at once.</p>
+    
+    <form action="/admin/import/upload" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      
+      <div class="form-group">
+        <label for="files">Select markdown files:</label>
+        <input type="file" id="files" name="files" multiple accept=".md,.markdown" required>
+        <small>You can select multiple .md files to import at once.</small>
+      </div>
+      
+      
+      <div class="form-actions">
+        <button type="submit" class="button">Import Posts</button>
+        <a href="/admin" class="button secondary">Cancel</a>
+      </div>
+    </form>
+    
+    <div class="help-section">
+      <h3>Supported Frontmatter Fields</h3>
+      <ul>
+        <li><code>title</code> - Post title</li>
+        <li><code>slug</code> - URL slug (auto-generated if not provided)</li>
+        <li><code>date</code> - Publication date (YYYY-MM-DD format)</li>
+        <li><code>published</code> - Whether post is published (true/false)</li>
+        <li><code>page</code> - Whether this is a page (true/false)</li>
+        <li><code>tags</code> - Comma-separated tags</li>
+        <li><code>description</code> - Meta description</li>
+        <li><code>keywords</code> - Meta keywords</li>
+        <li><code>canonical_url</code> - Canonical URL</li>
+        <li><code>og_image</code> - Open Graph image</li>
+        <li><code>no_index</code> - Whether to exclude from search engines (true/false)</li>
+      </ul>
+      
+      <h3>Example Frontmatter</h3>
+      <pre><code>---
+title: My Awesome Post
+date: 2024-01-15
+published: true
+tags: blog, tutorial, web development
+description: A great post about web development
+---
+
+# My Awesome Post
+
+This is the content of my post...</code></pre>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

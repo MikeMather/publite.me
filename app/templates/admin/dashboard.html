@@ -13,7 +13,10 @@
 <div class="admin-dashboard">
   <div class="header-with-actions">
     <h2>Posts</h2>
-    <a href="/admin/posts/new" class="button">New Post</a>
+    <div class="action-buttons">
+      <a href="/admin/posts/new" class="button">New Post</a>
+      <a href="/admin/import/" class="button secondary">Import Posts</a>
+    </div>
   </div>
   {% with items=posts, item_type='post', view_prefix='blog' %}
   {% include "admin/includes/content_list.html" %}

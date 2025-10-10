@@ -11,7 +11,7 @@ from app.auth import get_password_hash
 from app.database import get_db
 from app.main import app, templates
 from app.models import Base, Comment, Media, Post, Settings, User
-from app.routers import admin_router, blog_router, media_router
+from app.routers import admin_router, blog_router, import_router, media_router
 
 
 @pytest.fixture(scope="session")
@@ -117,6 +117,7 @@ def test_app():
     test_app = FastAPI()
     test_app.include_router(admin_router.router)
     test_app.include_router(blog_router.router)
+    test_app.include_router(import_router.router)
     test_app.include_router(media_router.router)
 
     @test_app.get("/test")

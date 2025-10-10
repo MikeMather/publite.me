@@ -14,7 +14,7 @@ from app.auth import SECRET_KEY
 from app.crud import settings
 from app.database import get_db
 from app.middleware.static_cache import CacheableStaticFiles
-from app.routers import admin_router, blog_router, media_router
+from app.routers import admin_router, blog_router, import_router, media_router
 from app.session import get_session
 
 
@@ -55,6 +55,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 app.include_router(admin_router.router)
 app.include_router(blog_router.router)
+app.include_router(import_router.router)
 app.include_router(media_router.router)
 
 
