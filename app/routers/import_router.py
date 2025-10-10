@@ -1,5 +1,6 @@
 import os
 from typing import List
+from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -11,8 +12,6 @@ from app.session import get_session
 from app.routers.admin_router import get_user_or_redirect
 
 router = APIRouter(prefix="/admin/import", tags=["import"])
-
-
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -44,10 +43,6 @@ async def import_page(request: Request, db: Session = Depends(get_db)):
 async def upload_files(
     request: Request,
     files: List[UploadFile] = File(...),
-@router.post("/upload")
-async def upload_files(
-    request: Request,
-    files: List[UploadFile] = File(...),
     csrf_token: str = Form(...),
     db: Session = Depends(get_db)
 ):
@@ -60,14 +55,6 @@ async def upload_files(
     if csrf_token != expected_token:
         raise HTTPException(status_code=403, detail="Invalid CSRF token")
 
-    if not files:
-        ...
-    # rest of the handler remains unchanged
-    db: Session = Depends(get_db)
-):
-    """Handle file uploads and import posts"""
-    await get_user_or_redirect(request, db)
-    
     if not files:
         raise HTTPException(status_code=400, detail="No files provided")
     
@@ -100,19 +87,9 @@ async def upload_files(
         message += f". {error_count} error(s) occurred."
     
     # Redirect to admin with success message
-# At the top of app/routers/import_router.py
-from urllib.parse import quote
-
-# ... other imports ...
-
-
-# Inside the function, before the redirect
-    # Redirect to admin with success message
     encoded_message = quote(message)
     encoded_errors = quote('|'.join(errors)) if errors else ''
     return RedirectResponse(
         url=f"/admin?message={encoded_message}&errors={encoded_errors}",
         status_code=302
     )
-
-
