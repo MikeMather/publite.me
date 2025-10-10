@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Uplo
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
-from app.crud import imports
+from app.crud import imports, settings
 from app.database import get_db
 from app.session import get_session
 from app.routers.admin_router import get_user_or_redirect
@@ -32,7 +32,10 @@ async def import_page(request: Request, db: Session = Depends(get_db)):
         "admin/import.html",
         {
             "request": request,
-            "csrf_token": csrf_token
+            "settings": settings.get_settings(db),
+            "csrf_token": csrf_token,
+            "title": "Import Posts",
+            "active": "posts"
         }
     )
 
