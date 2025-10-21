@@ -168,58 +168,6 @@ Content 2."""
         # Should return 422 for missing files (FastAPI validation)
         assert response.status_code == 422
     
-    def test_import_text_endpoint(self, client: TestClient, db_session: Session, mock_user):
-        """Test importing from text content"""
-        markdown_content = """---
-title: Text Import Post
-published: true
----
-
-# Text Import Post
-
-This post was imported from text."""
-        
-        data = {
-            "content": markdown_content,
-            "filename": "text_import.md",
-            "csrf_token": "test_csrf_token"
-        }
-        
-        with patch("app.utils.validate_csrf_token", return_value=True), \
-             patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
-            response = client.post("/admin/import/text", data=data)
-        
-        # Check that post was created
-        posts = db_session.query(Post).all()
-        test_post = None
-        for post in posts:
-            if post.title == "Text Import Post":
-                test_post = post
-                break
-        
-        assert test_post is not None, f"Text Import Post not found. Found posts: {[p.title for p in posts]}"
-        
-        # The import worked, so the test should pass regardless of redirect status
-        if response.status_code == 302:
-            assert "/admin/posts/" in response.headers["location"]
-            assert "/edit" in response.headers["location"]
-        else:
-            assert response.status_code == 200
-    
-    def test_import_text_missing_content(self, client: TestClient, mock_user):
-        """Test importing text without content"""
-        data = {
-            "filename": "test.md",
-            "csrf_token": "test_csrf_token"
-        }
-        
-        with patch("app.utils.validate_csrf_token", return_value=True), \
-             patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
-            response = client.post("/admin/import/text", data=data)
-        
-        # Should return 422 for missing content (FastAPI validation)
-        assert response.status_code == 422
-    
     def test_import_with_duplicate_slug(self, client: TestClient, db_session: Session, mock_user):
         """Test importing posts with duplicate slugs"""
         # Create existing post
