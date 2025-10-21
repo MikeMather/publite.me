@@ -17,13 +17,10 @@ class TestImportRouter:
         response = client.get("/admin/import/")
         
         assert response.status_code == 200
-        # Just check that we get a valid HTML response
         assert response.headers.get("content-type", "").startswith("text/html")
     
     def test_import_page_requires_auth(self, client: TestClient):
         """Test that import page requires authentication"""
-        # This test would need to be adjusted based on your auth implementation
-        # For now, we'll assume the middleware handles auth
         response = client.get("/admin/import/")
         assert response.status_code == 200  # Assuming auth is mocked in test setup
     
@@ -51,14 +48,10 @@ This is a test post for import functionality."""
              patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
             response = client.post("/admin/import/upload", files=files, data=data)
         
-        # The endpoint might not be available in test environment
-        # Check if it's a 404 (endpoint not found) or other error
         if response.status_code == 404:
             pytest.skip("Import router not available in test environment")
         
-        # Check that post was created in database first
         posts = db_session.query(Post).all()
-        # Find the post we just created
         test_post = None
         for post in posts:
             if post.title == "Test Import Post":
@@ -70,12 +63,9 @@ This is a test post for import functionality."""
         assert test_post.is_published is True
         assert "test, import" in test_post.tags
         
-        # The import worked, so the test should pass regardless of redirect status
-        # (The redirect might not work in test environment)
         if response.status_code == 302:
             assert "/admin" in response.headers["location"]
         else:
-            # If not redirecting, at least verify we got a successful response
             assert response.status_code == 200
     
     def test_upload_multiple_files(self, client: TestClient, db_session: Session, mock_user):
@@ -110,9 +100,7 @@ Content 2."""
              patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
             response = client.post("/admin/import/upload", files=files, data=data)
         
-        # Check that both posts were created
         posts = db_session.query(Post).all()
-        # Find the posts we just created
         first_post = None
         second_post = None
         for post in posts:
@@ -126,7 +114,6 @@ Content 2."""
         assert first_post.is_published is True
         assert second_post.is_published is False
         
-        # The import worked, so the test should pass regardless of redirect status
         if response.status_code == 302:
             assert "/admin" in response.headers["location"]
         else:
@@ -145,13 +132,10 @@ Content 2."""
              patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
             response = client.post("/admin/import/upload", files=files, data=data)
         
-        # No posts should be created (invalid file type)
         posts = db_session.query(Post).all()
-        # Only the mock_post should exist, no new posts from our test
         test_posts = [p for p in posts if p.title in ["Test Import Post", "First Post", "Second Post", "Text Import Post", "Complex Post", "Malformed Post"]]
         assert len(test_posts) == 0, f"Expected no test posts, but found: {[p.title for p in test_posts]}"
         
-        # The import should still redirect or return success
         if response.status_code == 302:
             assert "/admin" in response.headers["location"]
         else:
@@ -165,12 +149,10 @@ Content 2."""
         with patch("app.utils.validate_csrf_token", return_value=True):
             response = client.post("/admin/import/upload", data=data)
         
-        # Should return 422 for missing files (FastAPI validation)
         assert response.status_code == 422
     
     def test_import_with_duplicate_slug(self, client: TestClient, db_session: Session, mock_user):
         """Test importing posts with duplicate slugs"""
-        # Create existing post
         existing_content = """---
 title: Existing Post
 slug: test-post
@@ -182,7 +164,6 @@ Existing content."""
         
         import_markdown_post(db_session, existing_content, "existing.md")
         
-        # Import new post with same title (should generate unique slug)
         new_content = """---
 title: Test Post
 ---
@@ -202,9 +183,7 @@ New content."""
              patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
             response = client.post("/admin/import/upload", files=files, data=data)
         
-        # Check that both posts exist with unique slugs
         posts = db_session.query(Post).all()
-        # Find the posts we created
         existing_post = None
         new_post = None
         for post in posts:
@@ -215,12 +194,10 @@ New content."""
         
         assert existing_post is not None, f"Existing Post not found. Found posts: {[p.title for p in posts]}"
         assert new_post is not None, f"Test Post not found. Found posts: {[p.title for p in posts]}"
-        # Both posts should have unique slugs starting with "test-post"
         assert existing_post.slug.startswith("test-post")
         assert new_post.slug.startswith("test-post")
         assert existing_post.slug != new_post.slug
         
-        # The import worked, so the test should pass regardless of redirect status
         if response.status_code == 302:
             assert "/admin" in response.headers["location"]
         else:
@@ -256,7 +233,6 @@ This post has complex frontmatter."""
              patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
             response = client.post("/admin/import/upload", files=files, data=data)
         
-        # Check that post was created with all metadata
         posts = db_session.query(Post).all()
         test_post = None
         for post in posts:
@@ -275,7 +251,6 @@ This post has complex frontmatter."""
         assert test_post.no_index is False
         assert test_post.published_at is not None
         
-        # The import worked, so the test should pass regardless of redirect status
         if response.status_code == 302:
             assert "/admin" in response.headers["location"]
         else:
@@ -283,7 +258,6 @@ This post has complex frontmatter."""
     
     def test_import_error_handling(self, client: TestClient, db_session: Session, mock_user):
         """Test error handling during import"""
-        # Create malformed content that might cause errors
         malformed_content = """---
 title: Malformed Post
 date: invalid-date
@@ -305,7 +279,6 @@ Content."""
              patch("app.routers.import_router.get_user_or_redirect", return_value=mock_user):
             response = client.post("/admin/import/upload", files=files, data=data)
         
-        # Post should still be created (with default values for invalid fields)
         posts = db_session.query(Post).all()
         test_post = None
         for post in posts:
@@ -314,10 +287,9 @@ Content."""
                 break
         
         assert test_post is not None, f"Malformed Post not found. Found posts: {[p.title for p in posts]}"
-        assert test_post.is_published is False  # Invalid boolean should default to False
-        assert test_post.published_at is None  # Invalid date should be None
+        assert test_post.is_published is False 
+        assert test_post.published_at is None 
         
-        # The import worked, so the test should pass regardless of redirect status
         if response.status_code == 302:
             assert "/admin" in response.headers["location"]
         else:

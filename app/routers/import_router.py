@@ -19,10 +19,8 @@ async def import_page(request: Request, db: Session = Depends(get_db)):
     """Display the import page"""
     await get_user_or_redirect(request, db)
     
-    # Get CSRF token from request state
     csrf_token = getattr(request.state, 'csrf_token', '')
     
-    # Get templates from request state
     templates = getattr(request.state, 'templates', None)
     if not templates:
         raise HTTPException(status_code=500, detail="Templates not available")
@@ -76,7 +74,6 @@ async def upload_files(
         except Exception as e:
             errors.append(f"{file.filename}: Unexpected error - {e!s}")
     
-    # Prepare response message
     success_count = len(imported_posts)
     error_count = len(errors)
     
@@ -84,7 +81,6 @@ async def upload_files(
     if errors:
         message += f". {error_count} error(s) occurred."
     
-    # Redirect to admin with success message
     encoded_message = quote(message)
     encoded_errors = quote('|'.join(errors)) if errors else ''
     return RedirectResponse(

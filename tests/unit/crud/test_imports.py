@@ -29,11 +29,8 @@ This is the content."""
         frontmatter, content_without = parse_markdown_frontmatter(content)
         
         assert frontmatter['title'] == 'Test Post'
-        # python-frontmatter parses dates as datetime.date objects
         assert str(frontmatter['date']) == '2024-01-15'
-        # python-frontmatter parses booleans as actual booleans
         assert frontmatter['published'] is True
-        # python-frontmatter may parse tags as a list
         if isinstance(frontmatter['tags'], list):
             assert frontmatter['tags'] == ['test', 'example']
         else:
@@ -141,7 +138,7 @@ This is the content."""
         assert post.tags == "test, example"
         assert "Test Post" in post.markdown_content
         assert "This is the content." in post.markdown_content
-        assert post.content is not None  # HTML content should be generated
+        assert post.content is not None
     
     def test_import_post_no_frontmatter(self, db_session: Session):
         """Test importing post without frontmatter"""
@@ -153,7 +150,7 @@ This is the content."""
         
         assert post.title == "My Post"
         assert post.slug == "my-post"
-        assert post.is_published is False  # Default value
+        assert post.is_published is False
         assert post.tags == ""
     
     def test_import_post_with_custom_slug(self, db_session: Session):
@@ -173,7 +170,6 @@ Content."""
     
     def test_import_post_unique_slug(self, db_session: Session):
         """Test importing post with duplicate slug"""
-        # Create existing post
         existing_content = """---
 title: Existing Post
 slug: test-post
@@ -185,7 +181,6 @@ Content."""
         
         import_markdown_post(db_session, existing_content, "existing.md")
         
-        # Import new post with same title
         new_content = """---
 title: Test Post
 ---
@@ -196,7 +191,7 @@ New content."""
         
         post = import_markdown_post(db_session, new_content, "new.md")
         
-        assert post.slug == "test-post-1"  # Should be unique
+        assert post.slug == "test-post-1"
     
     def test_import_post_date_parsing(self, db_session: Session):
         """Test date parsing in frontmatter"""
@@ -307,7 +302,6 @@ Content 2.""")
         
         posts = import_multiple_markdown_posts(db_session, files)
         
-        # Should import 2 posts successfully, skip the invalid one
         assert len(posts) == 2
         assert posts[0].title == "First Post"
         assert posts[1].title == "Second Post"
