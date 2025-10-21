@@ -413,6 +413,61 @@ textarea {
   margin: 0;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Import page specific styles */
+.import-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.help-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--surface-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.help-section h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+}
+
+.help-section ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.help-section li {
+  margin: 0.5rem 0;
+}
+
+.help-section code {
+  background-color: var(--background-color);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  color: var(--primary-color);
+}
+
+.help-section pre {
+  background-color: var(--background-color);
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+}
+
+.help-section pre code {
+  background: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+
 
 .posts-list {
   width: 100%;

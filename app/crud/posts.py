@@ -19,6 +19,11 @@ def create_post(db: Session, post) -> Post:
         published_at=post.published_at,
         is_page=post.is_page,
         tags=post.tags if hasattr(post, "tags") else "",
+        meta_description=getattr(post, "meta_description", ""),
+        meta_keywords=getattr(post, "meta_keywords", ""),
+        canonical_url=getattr(post, "canonical_url", ""),
+        og_image=getattr(post, "og_image", ""),
+        no_index=getattr(post, "no_index", False),
     )
     db.add(db_post)
     db.commit()
