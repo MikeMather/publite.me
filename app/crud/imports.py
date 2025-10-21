@@ -1,7 +1,9 @@
 import re
 from datetime import datetime
 from typing import List, Optional, Tuple
-from urllib.parse import quote
+from app.crud import posts
+from app.crud.posts import create_post
+from app.utils import generate_unique_slug
 
 import frontmatter
 from sqlalchemy.orm import Session
@@ -36,22 +38,6 @@ def extract_title_from_content(content: str) -> str:
         if line.startswith('# '):
             return line[2:].strip()
     return "Untitled Post"
-    
-def generate_slug(title: str, existing_slugs: List[str]) -> str:
-    """
-    Generate a unique slug from title
-    """
-    slug = re.sub(r'[^\w\s-]', '', title.lower())
-    slug = re.sub(r'[-\s]+', '-', slug)
-    slug = slug.strip('-')
-    
-    original_slug = slug
-    counter = 1
-    while slug in existing_slugs:
-        slug = f"{original_slug}-{counter}"
-        counter += 1
-    
-    return slug
 
 
 def import_markdown_post(
@@ -78,11 +64,11 @@ def import_markdown_post(
             raise ValueError("Content too short or lacks structure")
     
     existing_slugs = [post.slug for post in db.query(Post.slug).all()]
-    slug = frontmatter.get('slug', generate_slug(title, existing_slugs))
+    slug = frontmatter.get('slug', generate_unique_slug(title, existing_slugs))
     
     original_slug = slug
     counter = 1
-    while db.query(Post).filter(Post.slug == slug).first():
+    while posts.get_post_by_slug(db, slug):
         slug = f"{original_slug}-{counter}"
         counter += 1
     
@@ -138,11 +124,8 @@ def import_markdown_post(
         og_image=frontmatter.get('og_image', ''),
         no_index=frontmatter.get('no_index', False) if isinstance(frontmatter.get('no_index', False), bool) else str(frontmatter.get('no_index', 'false')).lower() in ('true', '1', 'yes')
     )
-    
-    db.add(db_post)
-    db.commit()
-    db.refresh(db_post)
-    return db_post
+
+    return create_post(db, db_post)
 
 def import_multiple_markdown_posts(
     db: Session, 
