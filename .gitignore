@@ -41,6 +41,11 @@ venv
 data
 media
 
+# Infrastructure
+infra/
+
+# Docker images
+*.tar
 
 .env
 fly.toml

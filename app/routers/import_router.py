@@ -48,7 +48,7 @@ async def upload_files(
     await get_user_or_redirect(request, db)
 
     expected_token = getattr(request.state, 'csrf_token', '')
-    if csrf_token != expected_token:
+    if not csrf_token or csrf_token != expected_token:
         raise HTTPException(status_code=403, detail="Invalid CSRF token")
 
     if not files:
