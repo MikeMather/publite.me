@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 from app import utils
 from app.models import Post
-from app.crud import posts
     
 import logging
 
@@ -24,6 +23,7 @@ def parse_markdown_frontmatter(content: str) -> Tuple[dict, str]:
         post = frontmatter.loads(content)
         return post.metadata, post.content
     except Exception:
+        # If frontmatter parsing fails, return empty metadata and original content
         return {}, content
 
 
@@ -37,7 +37,25 @@ def extract_title_from_content(content: str) -> str:
         if line.startswith('# '):
             return line[2:].strip()
     return "Untitled Post"
+
+
+def generate_slug(title: str, existing_slugs: List[str]) -> str:
+    """
+    Generate a unique slug from title
+    """
+    # Convert to lowercase and replace spaces with hyphens
+    slug = re.sub(r'[^\w\s-]', '', title.lower())
+    slug = re.sub(r'[-\s]+', '-', slug)
+    slug = slug.strip('-')
     
+    # Ensure uniqueness
+    original_slug = slug
+    counter = 1
+    while slug in existing_slugs:
+        slug = f"{original_slug}-{counter}"
+        counter += 1
+    
+    return slug
 
 
 def import_markdown_post(
@@ -48,31 +66,41 @@ def import_markdown_post(
     """
     Import a single markdown post from content.
     """
+    # Check if content has basic structure
     if not markdown_content.strip():
         raise ValueError("Empty content")
     
+    # Parse frontmatter
     frontmatter, content = parse_markdown_frontmatter(markdown_content)
     
+    # Extract title
     title = frontmatter.get('title', extract_title_from_content(content))
     if not title:
         title = filename.replace('.md', '') if filename else "Untitled Post"
+    
+    # Check if content has meaningful structure (either frontmatter or markdown)
     if not frontmatter and not content.strip():
         raise ValueError("Content has no meaningful structure")
     
+    # Check if content has at least some markdown structure
     if not frontmatter and not any(line.strip().startswith('#') for line in content.split('\n')):
+        # If no frontmatter and no headings, require at least some content
         if len(content.strip()) < 50:
             raise ValueError("Content too short or lacks structure")
     
-    existing_slugs = posts.get_all_slugs(db)
-    slug = frontmatter.get('slug', utils.generate_unique_slug(title, existing_slugs))
+    # Generate slug
+    existing_slugs = [post.slug for post in db.query(Post.slug).all()]
+    slug = frontmatter.get('slug', generate_slug(title, existing_slugs))
     
-    # Double-check uniqueness using database query
+    # Ensure slug is unique
     original_slug = slug
     counter = 1
-    while posts.get_post_by_slug(db, slug):
+    while db.query(Post).filter(Post.slug == slug).first():
         slug = f"{original_slug}-{counter}"
         counter += 1
     
+    # Parse other frontmatter fields
+    # Handle boolean fields - python-frontmatter may return actual booleans
     published_value = frontmatter.get('published', False)
     if isinstance(published_value, bool):
         is_published = published_value
@@ -88,15 +116,17 @@ def import_markdown_post(
     tags = frontmatter.get('tags', '')
     if isinstance(tags, list):
         tags = ', '.join(tags)
-
+    
+    # Parse published date - python-frontmatter may return datetime objects
     published_at = None
     if frontmatter.get('date'):
         date_value = frontmatter['date']
         if isinstance(date_value, datetime):
             published_at = date_value
-        elif hasattr(date_value, 'date'):
+        elif hasattr(date_value, 'date'):  # datetime.date object
             published_at = datetime.combine(date_value, datetime.min.time())
         else:
+            # Try parsing as string
             try:
                 date_str = str(date_value)
                 for fmt in ['%Y-%m-%d', '%Y-%m-%d %H:%M:%S', '%Y-%m-%dT%H:%M:%S']:
@@ -106,15 +136,18 @@ def import_markdown_post(
                     except ValueError:
                         continue
             except (ValueError, TypeError, KeyError):
+                # Date parsing failed, leave published_at as None
                 pass
     
-    # Create PostCreate schema object
-    from app.schemas import PostCreate
+    # Convert markdown to HTML
+    html_content = utils.markdown_to_html(content)
     
-    post_data = PostCreate(
+    # Create post
+    db_post = Post(
         title=title,
         slug=slug,
         markdown_content=content,
+        content=html_content,
         is_published=is_published,
         published_at=published_at,
         is_page=is_page,
@@ -126,7 +159,10 @@ def import_markdown_post(
         no_index=frontmatter.get('no_index', False) if isinstance(frontmatter.get('no_index', False), bool) else str(frontmatter.get('no_index', 'false')).lower() in ('true', '1', 'yes')
     )
     
-    return posts.create_post(db, post_data)
+    db.add(db_post)
+    db.commit()
+    db.refresh(db_post)
+    return db_post
 
 def import_multiple_markdown_posts(
     db: Session, 

@@ -29,9 +29,15 @@ This is the content."""
         frontmatter, content_without = parse_markdown_frontmatter(content)
         
         assert frontmatter['title'] == 'Test Post'
-        assert frontmatter['date'] == '2024-01-15'
-        assert frontmatter['published'] == 'true'
-        assert frontmatter['tags'] == 'test, example'
+        # python-frontmatter parses dates as datetime.date objects
+        assert str(frontmatter['date']) == '2024-01-15'
+        # python-frontmatter parses booleans as actual booleans
+        assert frontmatter['published'] is True
+        # python-frontmatter may parse tags as a list
+        if isinstance(frontmatter['tags'], list):
+            assert frontmatter['tags'] == ['test', 'example']
+        else:
+            assert frontmatter['tags'] == 'test, example'
         assert '# Test Post' in content_without
         assert 'This is the content.' in content_without
     
