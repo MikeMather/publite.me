@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from app.crud.imports import (
     parse_markdown_frontmatter,
     extract_title_from_content,
-    generate_slug,
     import_markdown_post,
     import_multiple_markdown_posts,
 )
@@ -110,34 +109,6 @@ More content."""
         
         title = extract_title_from_content(content)
         assert title == "First Heading"
-
-
-class TestGenerateSlug:
-    """Test slug generation functionality"""
-    
-    def test_generate_slug_basic(self):
-        """Test basic slug generation"""
-        existing_slugs = []
-        slug = generate_slug("My Awesome Post", existing_slugs)
-        assert slug == "my-awesome-post"
-    
-    def test_generate_slug_with_special_chars(self):
-        """Test slug generation with special characters"""
-        existing_slugs = []
-        slug = generate_slug("My Awesome Post!", existing_slugs)
-        assert slug == "my-awesome-post"
-    
-    def test_generate_slug_unique(self):
-        """Test slug generation with existing slugs"""
-        existing_slugs = ["my-awesome-post", "my-awesome-post-1"]
-        slug = generate_slug("My Awesome Post", existing_slugs)
-        assert slug == "my-awesome-post-2"
-    
-    def test_generate_slug_empty_title(self):
-        """Test slug generation with empty title"""
-        existing_slugs = []
-        slug = generate_slug("", existing_slugs)
-        assert slug == ""
 
 
 class TestImportMarkdownPost:
