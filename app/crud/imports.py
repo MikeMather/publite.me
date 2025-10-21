@@ -67,8 +67,6 @@ def import_markdown_post(
     
     frontmatter, content = parse_markdown_frontmatter(markdown_content)
     
-    content = remove_one_line_comments(content)
-    
     title = frontmatter.get('title', extract_title_from_content(content))
     if not title:
         title = filename.replace('.md', '') if filename else "Untitled Post"
