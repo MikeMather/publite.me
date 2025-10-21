@@ -8,7 +8,7 @@ from app.utils import generate_unique_slug
 import frontmatter
 from sqlalchemy.orm import Session
 
-from app import utils
+from app import schemas, utils
 from app.models import Post
     
 import logging
@@ -107,13 +107,10 @@ def import_markdown_post(
             except (ValueError, TypeError, KeyError):
                 pass
     
-    html_content = utils.markdown_to_html(content)
-    
-    db_post = Post(
+    post_data = schemas.PostCreate(
         title=title,
         slug=slug,
         markdown_content=content,
-        content=html_content,
         is_published=is_published,
         published_at=published_at,
         is_page=is_page,
@@ -124,8 +121,7 @@ def import_markdown_post(
         og_image=frontmatter.get('og_image', ''),
         no_index=frontmatter.get('no_index', False) if isinstance(frontmatter.get('no_index', False), bool) else str(frontmatter.get('no_index', 'false')).lower() in ('true', '1', 'yes')
     )
-
-    return create_post(db, db_post)
+    return create_post(db, post_data)
 
 def import_multiple_markdown_posts(
     db: Session, 
