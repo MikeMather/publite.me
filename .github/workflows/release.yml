@@ -68,6 +68,11 @@ jobs:
           git push origin "v${{ env.NEW_VERSION }}"
 
       # Build Docker image
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: 'arm64,amd64'
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -81,6 +86,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             mikemather/publite:latest
