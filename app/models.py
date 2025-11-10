@@ -40,6 +40,11 @@ class Post(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # NEW FIELD: pin_priority (Integer, nullable)
+    # NULL means the post is NOT pinned.
+    # 0, 1, 2, ... determines the pin order (0 is highest priority/top).
+    pin_priority = Column(Integer, nullable=True)
+
     # SEO fields
     meta_description = Column(String(160), default="")
     meta_keywords = Column(String(255), default="")
