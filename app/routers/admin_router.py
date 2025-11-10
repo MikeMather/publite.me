@@ -232,6 +232,9 @@ async def create_post(
     markdown_content: str = Form(...),
     is_published: bool = Form(False),
     published_at: Optional[str] = Form(None),
+    # --- ADDED: pin_priority field from form ---
+    pin_priority: Optional[str] = Form(None),
+    # ------------------------------------------
     meta_description: str = Form(""),
     meta_keywords: str = Form(""),
     canonical_url: str = Form(""),
@@ -247,11 +250,33 @@ async def create_post(
     # Set the published date to the current date if the post is published and no date is specified
     if is_published and not published_at:
         published_at_datetime = datetime.utcnow()
-    elif published_at.strip():
+    elif published_at and published_at.strip():
         date_obj = datetime.strptime(published_at, "%Y-%m-%d").date()
         published_at_datetime = datetime.combine(date_obj, time())
     else:
         published_at_datetime = None
+        
+    # --- START PIN PRIORITY VALIDATION AND ASSIGNMENT ---
+    pin_priority_value = None
+    if pin_priority and pin_priority.strip():
+        try:
+            priority_int = int(pin_priority)
+            if priority_int < 0:
+                raise ValueError("Priority cannot be negative.")
+            pin_priority_value = priority_int
+        except ValueError:
+            # Handle error and reload form, preserving existing inputs (simplified error handling)
+            return request.state.templates.TemplateResponse(
+                 "admin/post_edit.html",
+                 {
+                     "request": request,
+                     "settings": settings.get_settings(db),
+                     "title": "New Post",
+                     "is_new": True,
+                     "error": "Pin Priority must be a non-negative whole number or left blank.",
+                 },
+             )
+    # --- END PIN PRIORITY LOGIC ---
 
     post = schemas.PostCreate(
         title=title,
@@ -261,6 +286,9 @@ async def create_post(
         is_published=is_published,
         published_at=published_at_datetime,
         is_page=False,
+        # --- ADDED pin_priority ---
+        pin_priority=pin_priority_value,
+        # ------------------------
         meta_description=meta_description,
         meta_keywords=meta_keywords,
         canonical_url=canonical_url,
@@ -309,6 +337,9 @@ async def update_post(
     markdown_content: str = Form(...),
     published_at: Optional[str] = Form(None),
     is_published: bool = Form(False),
+    # --- ADDED: pin_priority field from form ---
+    pin_priority: Optional[str] = Form(None),
+    # ------------------------------------------
     meta_description: str = Form(""),
     meta_keywords: str = Form(""),
     canonical_url: str = Form(""),
@@ -324,11 +355,27 @@ async def update_post(
     # Set the published date to the date the post was published if it was not specified
     if not post.is_published and is_published and not published_at:
         published_at_datetime = datetime.utcnow()
-    elif published_at.strip():
+    elif published_at and published_at.strip():
         date_obj = datetime.strptime(published_at, "%Y-%m-%d").date()
         published_at_datetime = datetime.combine(date_obj, time())
     else:
-        published_at_datetime = None
+        published_at_datetime = post.published_at # Preserve existing published date
+
+    # --- START PIN PRIORITY VALIDATION AND ASSIGNMENT ---
+    pin_priority_value = None
+    if pin_priority and pin_priority.strip():
+        try:
+            priority_int = int(pin_priority)
+            if priority_int < 0:
+                raise ValueError("Priority cannot be negative.")
+            pin_priority_value = priority_int
+        except ValueError:
+            # If there's an error, redirect back with an error message
+            return RedirectResponse(
+                url=f"/admin/posts/{post_id}/edit?error=priority_invalid",
+                status_code=status.HTTP_303_SEE_OTHER,
+            )
+    # --- END PIN PRIORITY LOGIC ---
 
     post_update = schemas.PostUpdate(
         title=title,
@@ -338,6 +385,9 @@ async def update_post(
         is_published=is_published,
         published_at=published_at_datetime,
         is_page=post.is_page,
+        # --- ADDED pin_priority ---
+        pin_priority=pin_priority_value,
+        # ------------------------
         meta_description=meta_description,
         meta_keywords=meta_keywords,
         canonical_url=canonical_url,
@@ -461,6 +511,9 @@ async def create_page(
     slug: Optional[str] = Form(None),
     markdown_content: str = Form(...),
     is_published: bool = Form(False),
+    # --- ADDED: pin_priority field from form ---
+    pin_priority: Optional[str] = Form(None),
+    # ------------------------------------------
     meta_description: str = Form(""),
     meta_keywords: str = Form(""),
     canonical_url: str = Form(""),
@@ -473,6 +526,28 @@ async def create_page(
         existing_slugs = posts.get_all_slugs(db)
         slug = utils.generate_unique_slug(title, existing_slugs)
 
+    # --- START PIN PRIORITY VALIDATION AND ASSIGNMENT ---
+    pin_priority_value = None
+    if pin_priority and pin_priority.strip():
+        try:
+            priority_int = int(pin_priority)
+            if priority_int < 0:
+                raise ValueError("Priority cannot be negative.")
+            pin_priority_value = priority_int
+        except ValueError:
+            # Handle error and reload form, preserving existing inputs
+            return request.state.templates.TemplateResponse(
+                 "admin/page_edit.html",
+                 {
+                     "request": request,
+                     "settings": settings.get_settings(db),
+                     "title": "New Page",
+                     "is_new": True,
+                     "error": "Pin Priority must be a non-negative whole number or left blank.",
+                 },
+             )
+    # --- END PIN PRIORITY LOGIC ---
+
     post = schemas.PostCreate(
         title=title,
         slug=slug,
@@ -480,6 +555,9 @@ async def create_page(
         markdown_content=markdown_content,
         is_published=is_published,
         is_page=True,
+        # --- ADDED pin_priority ---
+        pin_priority=pin_priority_value,
+        # ------------------------
         meta_description=meta_description,
         meta_keywords=meta_keywords,
         canonical_url=canonical_url,
@@ -527,6 +605,9 @@ async def update_page(
     slug: str = Form(...),
     markdown_content: str = Form(...),
     is_published: bool = Form(False),
+    # --- ADDED: pin_priority field from form ---
+    pin_priority: Optional[str] = Form(None),
+    # ------------------------------------------
     meta_description: str = Form(""),
     meta_keywords: str = Form(""),
     canonical_url: str = Form(""),
@@ -535,6 +616,22 @@ async def update_page(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_user_or_redirect),
 ):
+    # --- START PIN PRIORITY VALIDATION AND ASSIGNMENT ---
+    pin_priority_value = None
+    if pin_priority and pin_priority.strip():
+        try:
+            priority_int = int(pin_priority)
+            if priority_int < 0:
+                raise ValueError("Priority cannot be negative.")
+            pin_priority_value = priority_int
+        except ValueError:
+            # If there's an error, redirect back with an error message
+            return RedirectResponse(
+                url=f"/admin/pages/{page_id}/edit?error=priority_invalid",
+                status_code=status.HTTP_303_SEE_OTHER,
+            )
+    # --- END PIN PRIORITY LOGIC ---
+    
     page_update = schemas.PostUpdate(
         title=title,
         slug=slug,
@@ -542,6 +639,9 @@ async def update_page(
         markdown_content=markdown_content,
         is_published=is_published,
         is_page=True,
+        # --- ADDED pin_priority ---
+        pin_priority=pin_priority_value,
+        # ------------------------
         meta_description=meta_description,
         meta_keywords=meta_keywords,
         canonical_url=canonical_url,
