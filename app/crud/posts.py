@@ -19,6 +19,9 @@ def create_post(db: Session, post) -> Post:
         published_at=post.published_at,
         is_page=post.is_page,
         tags=post.tags if hasattr(post, "tags") else "",
+        # --- ADDED: pin_priority field ---
+        pin_priority=getattr(post, "pin_priority", None),
+        # ---------------------------------
         meta_description=getattr(post, "meta_description", ""),
         meta_keywords=getattr(post, "meta_keywords", ""),
         canonical_url=getattr(post, "canonical_url", ""),
@@ -46,6 +49,7 @@ def get_posts(
     if not include_pages:
         query = query.filter(~Post.is_page)
     if tag:
+        # Existing tag filtering logic
         query = query.filter(
             (Post.tags.ilike(f"%,{tag},%"))
             | (Post.tags.ilike(f"{tag},%"))
@@ -53,10 +57,22 @@ def get_posts(
             | (Post.tags.ilike(f"%,{tag}"))
             | (Post.tags == tag)
         )
-    if sort_by == "published_at":
+    
+    # --- MODIFIED SORTING LOGIC ---
+    if tag or sort_by == "pin_priority":
+        # If we are viewing a tag page or explicitly sorting by pin priority,
+        # prioritize pinned posts first, then sort by published date.
+        query = query.order_by(
+            Post.pin_priority.asc(),  # Pinned (0, 1, 2...) come first
+            Post.published_at.desc()  # Then sort by date (newest first)
+        )
+    elif sort_by == "published_at":
         query = query.order_by(Post.published_at.desc())
     elif sort_by == "created_at":
         query = query.order_by(Post.created_at.desc())
+        
+    # --- END MODIFIED SORTING LOGIC ---
+        
     return query.offset(skip).limit(limit).all()
 
 
